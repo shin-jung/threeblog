@@ -45,7 +45,11 @@ class ArticleController extends Controller
 
     public function show($articleId)
     {
-    	$showpost = $this->articless->showpost($articleId);
+    	if(is_numeric($articleId)){
+    		$showpost = $this->articless->showpost($articleId);
+    	} else {
+    		return redirect('/home');
+    	}
     	//$showpost是用來接return回來也就是->後的變數
     	//$this是指整個class裡的articless，因為已經有建構子把repositories引入所以只要showpost(articlerepositories內的function)內的變數即可
     	//$showpost = Article::where('id', $article_id)->get();
@@ -58,11 +62,12 @@ class ArticleController extends Controller
 
 	public function edit($articleId)
 	{
-		$editpost = $this->articless->editPost($articleId);
-
-		if($editpost->isEmpty()){
-			return redirect('/home');
-		}
+		if(is_numeric($articleId)){
+    		$editpost = $this->articless->editPost($articleId);
+    	} else {
+    		return redirect('/home');
+    	}
+		
     	return view('/edit')
     		->with('articles', $editpost[0]);
 	}
@@ -75,16 +80,17 @@ class ArticleController extends Controller
 			'content' => ['required', 'alpha_dash'],
 		]);
 
-		$this->articless->updatePost($request, $articleId);
-
-    	return redirect('/home');
+		if(is_numeric($articleId)){
+			$this->articless->updatePost($request, $articleId);
+		}
+		return redirect('/home');
 	}
 
 	public function destory($articleId)
 	{
-
-		$this->articless->destoryPost($articleId);
-
+		if(is_numeric($articleId)){
+			$this->articless->destoryPost($articleId);
+		}
     	return redirect('/home');
 	}
 }

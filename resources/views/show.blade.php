@@ -33,7 +33,9 @@
             <span>編輯</span>
             </button>
             </form>
+
         @endif
+            
     @endif
 
     <form action="/home" method="get">
