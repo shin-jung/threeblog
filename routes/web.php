@@ -24,11 +24,11 @@ Route::prefix('/article')->group(function(){
 
 	Route::get('/show/{id}', 'ArticleController@show');
 
-	Route::get('/edit/{id}', 'ArticleController@edit')->middleware(['Article','auth']);
+	Route::get('/edit/{id}', 'ArticleController@edit')->middleware(['auth','article']);
 
 	Route::post('/update/{id}', 'ArticleController@update')->middleware('auth');
 
-	Route::get('/delete/{id}', 'ArticleController@destory')->middleware(['Article','auth']);
+	Route::get('/delete/{id}', 'ArticleController@destory')->middleware(['auth','article']);
 });
 
 Route::fallback(function() {
