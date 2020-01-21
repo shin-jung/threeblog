@@ -3,7 +3,7 @@
 @section('title', 'show article')
 
 @section('content')
-    
+<div class="container">
     @if (Auth::user() == NULL)
         @if(isset($articles))
             @foreach($articles as $article)

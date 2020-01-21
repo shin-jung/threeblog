@@ -18,19 +18,19 @@ Route::get('/home', 'ArticleController@index');
 
 Route::get('/user', 'UserController@index');
 
-Route::prefix('/article')->group(function(){
+Route::get('/article/show/{id}', 'ArticleController@show');
 
-	Route::get('/create', 'ArticleController@create')->middleware('auth');
+Route::Group(['prefix' => 'article', 'middleware'=> 'auth'], function (){
 
-	Route::post('/store', 'ArticleController@store')->middleware('auth');
+	Route::get('/create', 'ArticleController@create');
 
-	Route::get('/show/{id}', 'ArticleController@show');
+	Route::post('/store', 'ArticleController@store');
 
-	Route::get('/edit/{id}', 'ArticleController@edit')->middleware(['auth','user']);
+	Route::get('/edit/{id}', 'ArticleController@edit')->middleware('user');
 
-	Route::post('/update/{id}', 'ArticleController@update')->middleware('auth');
+	Route::post('/update/{id}', 'ArticleController@update');
 
-	Route::get('/delete/{id}', 'ArticleController@destory')->middleware(['auth','user']);
+	Route::get('/delete/{id}', 'ArticleController@destory')->middleware('user');
 });
 
 Route::fallback(function() {
