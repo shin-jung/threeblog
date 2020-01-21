@@ -16,6 +16,8 @@ Auth::routes();
 
 Route::get('/home', 'ArticleController@index');
 
+Route::get('/user', 'UserController@index');
+
 Route::prefix('/article')->group(function(){
 
 	Route::get('/create', 'ArticleController@create')->middleware('auth');

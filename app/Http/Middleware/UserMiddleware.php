@@ -15,7 +15,6 @@ class UserMiddleware
      */
     public function handle($request, Closure $next)
     {
-
         $findauthor = Article::where('id', $request->route('id'))->first();
         if($findauthor == NULL){
             return redirect('/home');

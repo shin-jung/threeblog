@@ -3,7 +3,7 @@
 namespace App\Repositories;
 
 use App\Article;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Auth; //現在正在登入的
 use Illuminate\Http\Request;
 
 class ArticleRepositories
