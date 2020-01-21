@@ -62,6 +62,7 @@ class ArticleController extends Controller
 
 	public function edit($articleId)
 	{	
+		$editPost = $this->articleService->editPost($articleId);
     	return view('/edit')
     		->with('articles', $editPost); //
 	}
@@ -73,7 +74,7 @@ class ArticleController extends Controller
 			'title' => ['required', 'alpha_dash'],
 			'content' => ['required', 'alpha_dash'],
 		]);
-
+		$updatePost = $this->articleService->updatePost($request, $articleId);
 		return redirect('/home');
 	}
 

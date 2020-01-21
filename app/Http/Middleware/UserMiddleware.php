@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use App\User;
+use Illuminate\Support\Facades\Auth;
 
 class UserMiddleware
 {
@@ -16,7 +17,7 @@ class UserMiddleware
      */
     public function handle($request, Closure $next) //
     {
-        if(auth()->user()->admin != 'admin'){
+        if(Auth::user()->admin != 'admin'){
             return redirect('/home');
         }
         return $next($request);

@@ -20,7 +20,7 @@ Route::get('/article/show/{id}', 'ArticleController@show');
 
 Route::get('/user', 'UserController@index')->middleware('user');
 
-Route::Group(['prefix' => 'article', 'middleware'=> 'auth'], function (){
+Route::group(['prefix' => 'article', 'middleware' => 'auth'], function (){
 
 	Route::get('/create', 'ArticleController@create');
 

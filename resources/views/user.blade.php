@@ -17,5 +17,11 @@
 				@endif
             @endforeach
 	    @endif
+
+    <form action="/home" method="get">
+    <button type="submit" class="btn btn-md btn-danger">
+    <span class="pl-1">返回</span>
+    </button>
+    </form>
 </div>
 @endsection

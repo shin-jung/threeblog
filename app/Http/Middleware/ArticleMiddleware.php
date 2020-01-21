@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use App\Article;
+use Illuminate\Support\Facades\Auth;
 
 class ArticleMiddleware
 {
@@ -26,7 +27,7 @@ class ArticleMiddleware
             return redirect('/home');
         }
 
-        if(auth()->user()->admin != 'admin' && auth()->user()->name != $findAuthor->author){
+        if(Auth::user()->admin != 'admin' && Auth::user()->name != $findAuthor->author){
             return redirect('/home');
         }
         return $next($request);
