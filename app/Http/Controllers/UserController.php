@@ -4,21 +4,21 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Services\UserServices;  //no s
+use App\Services\UserService;
 
 class UserController extends Controller
 {
-    protected $user;
+    protected $userService;
 
-    public function __construct(UserServices $user)
+    public function __construct(UserService $userService)
 	{
-		$this->user = $user;
+		$this->userService = $userService;
 	}
 
 	public function index()
 	{
 		
-		$showUser = $this->user->indexUser(); 
+		$showUser = $this->userService->indexUser(); 
 
     	return view('/user')
     	    ->with('user', $showUser);

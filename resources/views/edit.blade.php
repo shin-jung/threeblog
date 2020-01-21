@@ -4,7 +4,7 @@
 
 @section('content')
 
-
+<div class="container">
 	@if ($errors->any())
 		@foreach ($errors->all() as $error)
 		<li>{{ $error }}</li>
@@ -25,4 +25,5 @@
 		<span class="pl-1">送出</span>
 		</button>
 	</form>
+</div>
 @endsection

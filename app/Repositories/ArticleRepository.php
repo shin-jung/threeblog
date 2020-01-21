@@ -6,18 +6,11 @@ use App\Article;
 use Illuminate\Support\Facades\Auth; //現在正在登入的
 use Illuminate\Http\Request;
 
-class ArticleRepositories
+class ArticleRepository
 {
-	protected $article;
-
-	public function __construct(Article $article)
-	{
-		$this->article = $article;
-	}
-
 	public function indexPost()
 	{
-		return $this->article->all();
+		return Article::all();
 	}
 
 	public function storePost(Request $request)
@@ -31,18 +24,18 @@ class ArticleRepositories
 
 	public function showPost($articleId)
 	{
-		return $this->article->where('id', $articleId)->get();
+		return Article::where('id', $articleId)->get();
 	}
 
 	public function editPost($articleId)
 	{
-		return $this->article->where('id', $articleId)->get();
+		return Article::where('id', $articleId)->first();
 	}
 
 	public function updatePost(Request $request, $articleId)
 	{
-		$updatepost = $this->article->where('id', $articleId)->get();
-		$updatepost[0]->update([
+		$updatePost = Article::where('id', $articleId)->first();
+		$updatePost->update([
 							'title' => $request->title,
 							'content' => $request->content,
 						]);
@@ -50,7 +43,7 @@ class ArticleRepositories
 
 	public function destoryPost($articleId)
 	{
-		$this->article->where('id', $articleId)->delete();
+		Article::where('id', $articleId)->delete();
 	}
 }
 
