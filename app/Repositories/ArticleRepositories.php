@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Article;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class ArticleRepositories
@@ -24,7 +25,7 @@ class ArticleRepositories
 		return Article::create([
 			'title' => $request->title,
     		'content' => $request->content,
-    		'author' => $request->user()->name,
+    		'author' => Auth::user()->name,
 		]);
 	} 
 
