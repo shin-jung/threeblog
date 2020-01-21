@@ -16,9 +16,9 @@ Auth::routes();
 
 Route::get('/home', 'ArticleController@index');
 
-Route::get('/user', 'UserController@index');
-
 Route::get('/article/show/{id}', 'ArticleController@show');
+
+Route::get('/user', 'UserController@index')->middleware('user');
 
 Route::Group(['prefix' => 'article', 'middleware'=> 'auth'], function (){
 
@@ -26,11 +26,11 @@ Route::Group(['prefix' => 'article', 'middleware'=> 'auth'], function (){
 
 	Route::post('/store', 'ArticleController@store');
 
-	Route::get('/edit/{id}', 'ArticleController@edit')->middleware('user');
+	Route::get('/edit/{id}', 'ArticleController@edit')->middleware('article');
 
-	Route::post('/update/{id}', 'ArticleController@update');
+	Route::post('/update/{id}', 'ArticleController@update')->middleware('article');
 
-	Route::get('/delete/{id}', 'ArticleController@destory')->middleware('user');
+	Route::get('/delete/{id}', 'ArticleController@destory')->middleware('article');
 });
 
 Route::fallback(function() {

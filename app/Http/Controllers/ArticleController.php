@@ -61,13 +61,7 @@ class ArticleController extends Controller
 	}
 
 	public function edit($articleId)
-	{
-		if(is_numeric($articleId)){
-    		$editPost = $this->articleService->editPost($articleId);
-    	} else {
-    		return redirect('/home');
-    	}
-		
+	{	
     	return view('/edit')
     		->with('articles', $editPost); //
 	}
@@ -80,17 +74,11 @@ class ArticleController extends Controller
 			'content' => ['required', 'alpha_dash'],
 		]);
 
-		if(is_numeric($articleId)){
-			$this->articleService->updatePost($request, $articleId);
-		}
 		return redirect('/home');
 	}
 
 	public function destory($articleId)
 	{
-		if(is_numeric($articleId)){
-			$this->articleService->destoryPost($articleId);
-		}
     	return redirect('/home');
 	}
 }

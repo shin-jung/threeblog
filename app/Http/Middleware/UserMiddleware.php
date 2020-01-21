@@ -3,7 +3,8 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use App\Article;
+use App\User;
+
 class UserMiddleware
 {
     /**
@@ -13,13 +14,9 @@ class UserMiddleware
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle($request, Closure $next) //
     {
-        $findauthor = Article::where('id', $request->route('id'))->first();
-        if($findauthor == NULL){
-            return redirect('/home');
-        }
-        if(auth()->user()->admin != 'admin' && auth()->user()->name != $findauthor->author){
+        if(auth()->user()->admin != 'admin'){
             return redirect('/home');
         }
         return $next($request);
