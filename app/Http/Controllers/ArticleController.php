@@ -20,13 +20,7 @@ class ArticleController extends Controller
 	{
 		$showArticle = $this->articleService->indexPost(); 
 		
-    	return view('/home')
-    	    ->with('articles', $showArticle);
-	}
-
-	public function create()
-	{
-    	return view('/create');
+    	return $showArticle;
 	}
 
 	public function store(Request $request)
@@ -36,9 +30,18 @@ class ArticleController extends Controller
     		'content' => ['required', 'alpha_dash'],
     	]);
 
-		$this->articleService->storePost($request);
-
-    	return redirect('/home');
+		if ($this->articleService->storePost($request)){
+			return response()->json([
+                'success' => true,
+                'message' => 'Success.',
+                'data' => '',
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'Sorry, data could not be added.',
+			], 500);
+		}
     }
 
     public function show($articleId)

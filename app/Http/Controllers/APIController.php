@@ -8,9 +8,9 @@ use Illuminate\Http\Request;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use App\Http\Requests\registrationFormRequest;
 
-class APIController extends Controller
+class ApiController extends Controller
 {
-    public $loginAfterSignUp = true;
+    public $loginAfterSignUp = true; //註冊之後登入
 
     public function login(Request $request)
     {
@@ -18,7 +18,7 @@ class APIController extends Controller
         $token = null;  //
 
         //如果我的token不等於我的輸入就回傳失敗以及無效的密碼和電子郵件
-        if (!$token = JWTAuth::attempt($input)) {
+        if (!$token = JWTAuth::attempt($input)) {  //確定身分驗證是否成功
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid Email or Password',
@@ -40,15 +40,15 @@ class APIController extends Controller
 
         try {
             JWTAuth::invalidate($request->token);
-
+            //通過傳遞表單請求來調用該方法。
             return response()->json([
                 'success' => true,
-                'message' => 'User logged out successfully'
+                'message' => 'User logged out successfully',
             ]);
         } catch (JWTException $exception) {
             return response()->json([
                 'success' => false,
-                'message' => 'Sorry, the user cannot be logged out'
+                'message' => 'Sorry, the user cannot be logged out',
             ], 500);
         }
 
@@ -59,19 +59,21 @@ class APIController extends Controller
 
     public function register(RegistrationFormRequest $request)
     {
+    	//reguster()從表單請求中獲取數據，並創建User模型的新案例並保存。
         $user = new User();
         $user->name = $request->name;
         $user->email = $request->email;
         $user->password = bcrypt($request->password);
         $user->save();
 
+        //$loginAfterSignup調用該login()方法來對用戶進行身分驗證並將成功回傳回去
         if ($this->loginAfterSignUp) {
             return $this->login($request);
         }
 
         return response()->json([
             'success'   =>  true,
-            'data'      =>  $user
+            'data'      =>  $user,
         ], 200);
         //200 請求成功
     }

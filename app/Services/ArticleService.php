@@ -21,7 +21,7 @@ class ArticleService
 
 	public function storePost(Request $request)
 	{
-		$this->articleRepository->storePost($request);
+		return $this->articleRepository->storePost($request);
 	}
 
 	public function showPost($articleId)

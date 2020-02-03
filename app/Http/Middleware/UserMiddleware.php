@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use App\User;
-use Illuminate\Support\Facades\Auth;
+use JWTAuth;
 
 class UserMiddleware
 {
@@ -17,7 +17,7 @@ class UserMiddleware
      */
     public function handle($request, Closure $next) //
     {
-        if(Auth::user()->admin != 'admin'){
+        if(JWTAuth::user()->admin != 'admin'){
             return redirect('/home');
         }
         return $next($request);

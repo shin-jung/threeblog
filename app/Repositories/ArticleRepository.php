@@ -3,7 +3,7 @@
 namespace App\Repositories;
 
 use App\Article;
-use Illuminate\Support\Facades\Auth; //現在正在登入的
+use JWTAuth;
 use Illuminate\Http\Request;
 
 class ArticleRepository
@@ -15,10 +15,10 @@ class ArticleRepository
 
 	public function storePost(Request $request)
 	{
-		Article::create([
+		return Article::create([
 			'title' => $request->title,
     		'content' => $request->content,
-    		'author' => Auth::user()->name,
+    		'author' => JWTAuth::user()->name,
 		]);
 	} 
 
