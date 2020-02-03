@@ -15,7 +15,7 @@ class ArticleRepository
 
 	public function storePost(Request $request)
 	{
-		return Article::create([
+		Article::create([
 			'title' => $request->title,
     		'content' => $request->content,
     		'author' => Auth::user()->name,

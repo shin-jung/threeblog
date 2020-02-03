@@ -36,12 +36,11 @@ class ArticleService
 
 	public function updatePost(Request $request, $articleId)
 	{
-		return $this->articleRepository->updatePost($request, $articleId);
+		$this->articleRepository->updatePost($request, $articleId);
 	}
 
 	public function destoryPost($articleId)
 	{
 		$this->articleRepository->destoryPost($articleId);
-
 	}
 }

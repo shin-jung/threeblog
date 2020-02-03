@@ -14,19 +14,9 @@
 
 Auth::routes();
 
-Route::get('/home', 'ArticleController@index');
-
-Route::get('/article/show/{id}', 'ArticleController@show');
-
-Route::get('/user', 'UserController@index')->middleware('user');
-
-Route::group(['prefix' => 'article', 'middleware' => 'auth'], function (){
-
-	Route::get('/create', 'ArticleController@create');
+Route::group(['prefix' => 'article', 'middleware' => 'auth'], function() {
 
 	Route::post('/store', 'ArticleController@store');
-
-	Route::get('/edit/{id}', 'ArticleController@edit')->middleware('article');
 
 	Route::post('/update/{id}', 'ArticleController@update')->middleware('article');
 

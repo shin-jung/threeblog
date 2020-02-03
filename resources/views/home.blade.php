@@ -27,7 +27,7 @@
                     <HR SIZE=10>
                 </div>
                 @if (Auth::user() != NULL)
-                @if( Auth::user()->admin == 'admin')
+                @if (Auth::user()->admin == 'admin')
                     <form action="/user" method="get">
                     <button type="submit" class="btn btn-md btn-danger">
                     <span class="pl-1">會員列表</span>
@@ -36,11 +36,11 @@
                 @endif
                 @endif
                     @if(isset($articles))
-                            @foreach($articles as $article)
+                            @foreach( $articles as $article )
                                 <span>作者: </span>
                                 &emsp;&emsp;{{ $article->author }}
                                 <span>標題: </span>
-                                <a href="/article/show/{{$article->id}}">
+                                <a href="/article/show/{{ $article->id }}">
                                 &emsp;&emsp;{{ $article->title }}
                                 </a>
                                 <span>內文: </span>

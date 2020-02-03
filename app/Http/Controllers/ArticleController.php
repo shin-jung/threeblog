@@ -18,7 +18,6 @@ class ArticleController extends Controller
 
     public function index()
 	{
-		
 		$showArticle = $this->articleService->indexPost(); 
 		
     	return view('/home')
@@ -27,7 +26,6 @@ class ArticleController extends Controller
 
 	public function create()
 	{
-
     	return view('/create');
 	}
 
@@ -52,10 +50,10 @@ class ArticleController extends Controller
     	}
     	//$showpost是用來接return回來也就是->後的變數
     	//$this是指整個class裡的articless，因為已經有建構子把repositories引入所以只要showpost(articlerepositories內的function)內的變數即可
-    	//$showpost = Article::where('id', $article_id)->get();
 		if($showPost->isEmpty()){
 			return redirect('/home');
 		}
+
     	return view('/show')
     		->with('articles', $showPost);
 	}
@@ -63,23 +61,27 @@ class ArticleController extends Controller
 	public function edit($articleId)
 	{	
 		$editPost = $this->articleService->editPost($articleId);
+
     	return view('/edit')
     		->with('articles', $editPost); //
 	}
 
 	public function update(Request $request, $articleId)
 	{
-		
 		$request->validate([
 			'title' => ['required', 'alpha_dash'],
 			'content' => ['required', 'alpha_dash'],
 		]);
-		$updatePost = $this->articleService->updatePost($request, $articleId);
+		
+		$this->articleService->updatePost($request, $articleId);
+
 		return redirect('/home');
 	}
 
 	public function destory($articleId)
 	{
+		$this->articleService->destoryPost($articleId);
+
     	return redirect('/home');
 	}
 }
