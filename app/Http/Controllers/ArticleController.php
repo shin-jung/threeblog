@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Article;
 use Illuminate\Http\Request;
 use App\Services\ArticleService;
+use Illuminate\Support\Facades\Validator;
 
 
 class ArticleController extends Controller
@@ -25,22 +26,23 @@ class ArticleController extends Controller
 
 	public function store(Request $request)
     {    	
-    	$request->validate([
-    		'title' => ['required', 'alpha_dash'],
-    		'content' => ['required', 'alpha_dash'],
+    	$validator = validator::make($request->all(),[
+    		'title' => 'required|alpha_dash',
+    		'content' => 'required|alpha_dash',
     	]);
 
+    	if ($validator->fails()) {
+    		return response()->json([
+    			'success' => false,
+    			'message' => 'Sorry, data could not be added.'
+    		], 500);
+    	}
 		if ($this->articleService->storePost($request)) {
 			return response()->json([
                 'success' => true,
                 'message' => 'Success.',
                 'data' => '',
 			], 200);
-		} else {
-			return response()->json([
-				'success' => false,
-				'message' => 'Sorry, data could not be added.',
-			], 500);
 		}
     }
 
@@ -72,23 +74,25 @@ class ArticleController extends Controller
 
 	public function update(Request $request, $articleId)
 	{
-		$request->validate([
-			'title' => ['required', 'alpha_dash'],
-			'content' => ['required', 'alpha_dash'],
-		]);
-		
+    	$validator = validator::make($request->all(),[
+    		'title' => 'required|alpha_dash',
+    		'content' => 'required|alpha_dash',
+    	]);
+
+    	if ($validator->fails()) {
+    		return response()->json([
+    			'success' => false,
+    			'message' => 'Sorry, data could not be added.'
+    		], 500);
+    	}
+    	
 		if ($this->articleService->updatePost($request, $articleId)) {
 			return response()->json([
                 'success' => true,
                 'message' => 'Success.',
                 'data' => '',
 			], 200);			
-		} else {
-			return response()->json([
-				'success' => false,
-				'message' => 'Sorry, data could not be added.',
-			], 500);
-		}
+		} 
 	}
 
 	public function destory($articleId)

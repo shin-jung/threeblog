@@ -6,12 +6,17 @@ use JWTAuth;
 use App\User;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Exceptions\JWTException;
-use App\Http\Requests\registrationFormRequest;
 use Illuminate\Support\Facades\Validator;
+use App\Services\ApiService;
 
 class ApiController extends Controller
 {
-    public $loginAfterSignUp = true; //註冊之後登入
+    protected $apiService;
+
+    public function __construct(ApiService $apiService)
+    {
+        $this->apiService = $apiService;
+    }
 
     public function login(Request $request)
     {
@@ -22,7 +27,7 @@ class ApiController extends Controller
         if (!$token = JWTAuth::attempt($input)) {  //確定身分驗證是否成功
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid Email or Password',
+                'message' => 'Invalid Email or Password.',
             ], 401);
             //401 需要授權以回應請求。伺服器不知道用戶端身分
         }
@@ -40,43 +45,40 @@ class ApiController extends Controller
             //通過傳遞表單請求來調用該方法。
             return response()->json([
                 'success' => true,
-                'message' => 'User logged out successfully',
+                'message' => 'User logged out successfully.',
             ]);
         } catch (JWTException $exception) {
             return response()->json([
                 'success' => false,
-                'message' => 'Sorry, the user cannot be logged out',
+                'message' => 'Sorry, the user cannot be logged out.',
             ], 500);
         }
-
         //try-使用異常的函數應該位於"try"代碼塊內。如果沒有觸發異常，則代碼將照常繼續執行。但如果一常被觸發，會拋出一個異常
         //catch-會捕獲try發出的異常，並創建一個包含異常信息的對象
         //500 伺服器端發生未知或無法處理的錯誤
     }
 
-    public function register(RegistrationFormRequest $request)
+    public function register(Request $request)
     {
-    	//register()從表單請求中獲取數據，並創建User模型的新案例並保存。
-        // $user = new User();  //User()
-        // $user->name = $request->name;
-        // $user->email = $request->email;
-        // $user->password = bcrypt($request->password);
-        // $user->save();
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
+        $Validator = Validator::make($request->all(),[
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|string|min:6|max:20',
         ]);
 
-        //$loginAfterSignup調用該login()方法來對用戶進行身分驗證並將成功回傳回去
-        if ($this->loginAfterSignUp) {
-            return $this->login($request);
+        if ($Validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sorry, you can not register.',
+            ], 500);
+        } 
+        if ($this->apiService->register($request)) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Success.',
+                'data' => '',
+            ], 200);
         }
-
-        return response()->json([
-            'success'   =>  true,
-            'data'      =>  $user,
-        ], 200);
         //200 請求成功
     }
 }
