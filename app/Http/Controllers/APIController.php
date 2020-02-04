@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use JWTAuth;
-use APP\User;
+use App\User;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use App\Http\Requests\registrationFormRequest;
+use Illuminate\Support\Facades\Validator;
 
 class ApiController extends Controller
 {
@@ -34,10 +35,6 @@ class ApiController extends Controller
 
     public function logout(Request $request)
     {
-        $this->validate($request, [  //驗證甚麼
-            'token' => 'required'
-        ]);
-
         try {
             JWTAuth::invalidate($request->token);
             //通過傳遞表單請求來調用該方法。
@@ -59,12 +56,17 @@ class ApiController extends Controller
 
     public function register(RegistrationFormRequest $request)
     {
-    	//reguster()從表單請求中獲取數據，並創建User模型的新案例並保存。
-        $user = new User();
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->password = bcrypt($request->password);
-        $user->save();
+    	//register()從表單請求中獲取數據，並創建User模型的新案例並保存。
+        // $user = new User();  //User()
+        // $user->name = $request->name;
+        // $user->email = $request->email;
+        // $user->password = bcrypt($request->password);
+        // $user->save();
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+        ]);
 
         //$loginAfterSignup調用該login()方法來對用戶進行身分驗證並將成功回傳回去
         if ($this->loginAfterSignUp) {
