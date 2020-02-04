@@ -30,7 +30,7 @@ class ArticleController extends Controller
     		'content' => ['required', 'alpha_dash'],
     	]);
 
-		if ($this->articleService->storePost($request)){
+		if ($this->articleService->storePost($request)) {
 			return response()->json([
                 'success' => true,
                 'message' => 'Success.',
@@ -46,27 +46,28 @@ class ArticleController extends Controller
 
     public function show($articleId)
     {
-    	if(is_numeric($articleId)){
+    	if (is_numeric($articleId)) {
     		$showPost = $this->articleService->showPost($articleId);
     	} else {
-    		return redirect('/home');
+			return response()->json([
+				'success' => false,
+				'message' => 'Sorry, data could not be show.',
+			], 500);
     	}
     	//$showpost是用來接return回來也就是->後的變數
     	//$this是指整個class裡的articless，因為已經有建構子把repositories引入所以只要showpost(articlerepositories內的function)內的變數即可
-		if($showPost->isEmpty()){
-			return redirect('/home');
+		if ($showPost->isEmpty()) {
+			return response()->json([
+				'success' => false,
+				'message' => 'Sorry, data could not be show.',
+			], 500);
+		} else {
+			return response()->json([
+				'success' => true,
+				'message' => 'Success',
+				'data' => $showPost,
+			]);
 		}
-
-    	return view('/show')
-    		->with('articles', $showPost);
-	}
-
-	public function edit($articleId)
-	{	
-		$editPost = $this->articleService->editPost($articleId);
-
-    	return view('/edit')
-    		->with('articles', $editPost); //
 	}
 
 	public function update(Request $request, $articleId)
@@ -76,16 +77,34 @@ class ArticleController extends Controller
 			'content' => ['required', 'alpha_dash'],
 		]);
 		
-		$this->articleService->updatePost($request, $articleId);
-
-		return redirect('/home');
+		if ($this->articleService->updatePost($request, $articleId)) {
+			return response()->json([
+                'success' => true,
+                'message' => 'Success.',
+                'data' => '',
+			], 200);			
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'Sorry, data could not be added.',
+			], 500);
+		}
 	}
 
 	public function destory($articleId)
 	{
-		$this->articleService->destoryPost($articleId);
-
-    	return redirect('/home');
+		if ($this->articleService->destoryPost($articleId)) {
+			return response()->json([
+                'success' => true,
+                'message' => 'Success.',
+                'data' => '',
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'Sorry, data could not be delete.',
+			], 500);
+		}
 	}
 }
 

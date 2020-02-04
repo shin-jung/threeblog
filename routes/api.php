@@ -16,7 +16,6 @@ Route::post('login', 'ApiController@login');
 
 Route::post('register', 'ApiController@register');
 
-
 Route::group(['prefix' => 'article' , 'middleware' => 'auth.jwt'], function(){
 
 	Route::post('logout', 'ApiController@logout');
@@ -24,4 +23,10 @@ Route::group(['prefix' => 'article' , 'middleware' => 'auth.jwt'], function(){
 	Route::get('/home', 'ArticleController@index');
 
 	Route::post('/store', 'ArticleController@store');
+
+	Route::get('/show/{id}', 'ArticleController@show');
+
+	Route::post('/update/{id}', 'ArticleController@update')->middleware('article');
+
+	Route::get('/delete/{id}', 'ArticleController@destory')->middleware('article');
 });

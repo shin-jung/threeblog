@@ -27,14 +27,9 @@ class ArticleRepository
 		return Article::where('id', $articleId)->get();
 	}
 
-	public function editPost($articleId)
-	{
-		return Article::where('id', $articleId)->first();
-	}
-
 	public function updatePost(Request $request, $articleId)
 	{
-		$updatePost = Article::where('id', $articleId)->update([
+		return Article::where('id', $articleId)->update([
 							'title' => $request->title,
 							'content' => $request->content,
 						]);
@@ -42,7 +37,7 @@ class ArticleRepository
 
 	public function destoryPost($articleId)
 	{
-		Article::where('id', $articleId)->delete();
+		return Article::where('id', $articleId)->delete();
 	}
 }
 

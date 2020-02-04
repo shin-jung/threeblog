@@ -29,18 +29,13 @@ class ArticleService
 		return $this->articleRepository->showPost($articleId);
 	}
 
-	public function editPost($articleId)
-	{
-		return $this->articleRepository->editPost($articleId);
-	}
-
 	public function updatePost(Request $request, $articleId)
 	{
-		$this->articleRepository->updatePost($request, $articleId);
+		return $this->articleRepository->updatePost($request, $articleId);
 	}
 
 	public function destoryPost($articleId)
 	{
-		$this->articleRepository->destoryPost($articleId);
+		return $this->articleRepository->destoryPost($articleId);
 	}
 }
