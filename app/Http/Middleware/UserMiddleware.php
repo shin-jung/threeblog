@@ -6,7 +6,7 @@ use Closure;
 use App\User;
 use JWTAuth;
 
-class UserMiddleware
+class UserMiddleware //看會員列表
 {
     /**
      * Handle an incoming request.
@@ -17,9 +17,13 @@ class UserMiddleware
      */
     public function handle($request, Closure $next) //
     {
-        if(JWTAuth::user()->admin != 'admin'){
-            return redirect('/home');
-        }
+        if (JWTAuth::user()->admin != 'admin') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sorry, you can not look this article.',
+            ], 500);
+        } 
+    
         return $next($request);
     }
 }

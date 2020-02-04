@@ -16,6 +16,8 @@ Route::post('login', 'ApiController@login');
 
 Route::post('register', 'ApiController@register');
 
+Route::get('/user', 'UserController@index')->middleware(['auth.jwt','user']);
+
 Route::group(['prefix' => 'article' , 'middleware' => 'auth.jwt'], function(){
 
 	Route::post('logout', 'ApiController@logout');
@@ -29,4 +31,11 @@ Route::group(['prefix' => 'article' , 'middleware' => 'auth.jwt'], function(){
 	Route::post('/update/{id}', 'ArticleController@update')->middleware('article');
 
 	Route::get('/delete/{id}', 'ArticleController@destory')->middleware('article');
+});
+
+Route::fallback(function() {
+    return response()->json([
+        'success' => false,
+    	'message' => 'Sorry, can not find this web.',
+    ], 500);
 });

@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use App\Article;
-use Illuminate\Support\Facades\Auth;
+use JWTAuth;
 
 class ArticleMiddleware
 {
@@ -17,19 +17,29 @@ class ArticleMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if(!is_numeric($request->route('id'))){
-            return redirect('/home');
-        }
+        if (!is_numeric($request->route('id'))) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sorry, can not find this web.',
+            ], 500);
+        } 
 
         $findAuthor = Article::where('id', $request->route('id'))->first();
         
-        if($findAuthor == NULL){
-            return redirect('/home');
+        if (is_null($findAuthor)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sorry, can not find this web.',
+            ], 500);
         }
 
-        if(Auth::user()->admin != 'admin' && Auth::user()->name != $findAuthor->author){
-            return redirect('/home');
+        if (JWTAuth::user()->admin != 'admin' && JWTAuth::user()->name != $findAuthor->author) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sorry, can not find this web.',
+            ], 500);
         }
+
         return $next($request);
     }
 }

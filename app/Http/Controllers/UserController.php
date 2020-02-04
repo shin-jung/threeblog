@@ -20,7 +20,6 @@ class UserController extends Controller
 		
 		$showUser = $this->userService->indexUser(); 
 
-    	return view('/user')
-    	    ->with('user', $showUser);
+		return $showUser;
 	}
 }
