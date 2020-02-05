@@ -66,7 +66,7 @@ class ApiController extends Controller
         $validator = Validator::make($request->all(),[
             'name' => 'required|string',
             'email' => 'required|string|email|unique:users',
-            'password' => 'required|string|min:6|max:20',
+            'password' => 'required|string|min:6|max:20|confirmed',
         ]);
 
         if ($validator->fails()) {
