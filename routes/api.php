@@ -30,7 +30,7 @@ Route::group(['prefix' => 'article' , 'middleware' => 'auth.jwt'], function(){
 
 	Route::post('/update/{id}', 'ArticleController@update')->middleware('article');
 
-	Route::get('/delete/{id}', 'ArticleController@destory')->middleware('article');
+	Route::post('/delete/{id}', 'ArticleController@destory')->middleware('article');
 });
 
 Route::fallback(function() {
