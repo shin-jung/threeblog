@@ -21,7 +21,7 @@ class ArticleController extends Controller
 	{
 		$showArticle = $this->articleService->indexPost(); 
 		
-    	return $showArticle;
+    	return $showArticle;  //
 	}
 
 	public function store(Request $request)
@@ -34,7 +34,8 @@ class ArticleController extends Controller
     	if ($validator->fails()) {
     		return response()->json([
     			'success' => false,
-    			'message' => 'Sorry, data could not be added.'
+    			'message' => 'Sorry, data could not be added.',
+    			'data' => '',
     		], 500);
     	}
 		if ($this->articleService->storePost($request)) {
@@ -54,6 +55,7 @@ class ArticleController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Sorry, data could not be show.',
+				'data' => '',
 			], 500);
     	}
     	//$showpost是用來接return回來也就是->後的變數
@@ -62,6 +64,7 @@ class ArticleController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Sorry, data could not be show.',
+				'data' => '',
 			], 500);
 		} else {
 			return response()->json([
@@ -82,10 +85,11 @@ class ArticleController extends Controller
     	if ($validator->fails()) {
     		return response()->json([
     			'success' => false,
-    			'message' => 'Sorry, data could not be added.'
+    			'message' => 'Sorry, data could not be added.',
+    			'data' => '',
     		], 500);
     	}
-    	
+
 		if ($this->articleService->updatePost($request, $articleId)) {
 			return response()->json([
                 'success' => true,
@@ -107,6 +111,7 @@ class ArticleController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Sorry, data could not be delete.',
+				'data' => '',
 			], 500);
 		}
 	}

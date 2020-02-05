@@ -28,13 +28,14 @@ class ApiController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid Email or Password.',
+                'data' => '',
             ], 401);
             //401 需要授權以回應請求。伺服器不知道用戶端身分
         }
 
         return response()->json([
             'success' => true,
-            'token' => $token,
+            'token' => $token, ///////
         ]);
     }
 
@@ -46,11 +47,13 @@ class ApiController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'User logged out successfully.',
+                'data' => '',
             ]);
         } catch (JWTException $exception) {
             return response()->json([
                 'success' => false,
-                'message' => $exception->getMessage(),//'Sorry, the user cannot be logged out.',
+                'message' => 'Sorry, the user cannot be logged out.',
+                'data' => '',
             ], 500);
         }
         //try-使用異常的函數應該位於"try"代碼塊內。如果沒有觸發異常，則代碼將照常繼續執行。但如果一常被觸發，會拋出一個異常
@@ -60,16 +63,17 @@ class ApiController extends Controller
 
     public function register(Request $request)
     {
-        $Validator = Validator::make($request->all(),[
+        $validator = Validator::make($request->all(),[
             'name' => 'required|string',
             'email' => 'required|string|email|unique:users',
             'password' => 'required|string|min:6|max:20',
         ]);
 
-        if ($Validator->fails()) {
+        if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Sorry, you can not register.',
+                'message' => 'Sorry, you can not register.',  //reason
+                'data' => '',
             ], 500);
         } 
         if ($this->apiService->register($request)) {
@@ -78,7 +82,8 @@ class ApiController extends Controller
                 'message' => 'Success.',
                 'data' => '',
             ], 200);
-        }
+        } ///
+
         //200 請求成功
     }
 }

@@ -21,6 +21,7 @@ class UserMiddleware //看會員列表
             return response()->json([
                 'success' => false,
                 'message' => 'Sorry, you can not look this article.',
+                'data' => '',
             ], 500);
         } 
     

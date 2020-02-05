@@ -20,6 +20,6 @@ class UserController extends Controller
 		
 		$showUser = $this->userService->indexUser(); 
 
-		return $showUser;
+		return $showUser;//json
 	}
 }
