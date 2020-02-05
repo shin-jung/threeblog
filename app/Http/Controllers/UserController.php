@@ -20,6 +20,18 @@ class UserController extends Controller
 		
 		$showUser = $this->userService->indexUser(); 
 
-		return $showUser;//json
+		if ($showUser) {
+			return response()->json([
+				'success' => true,
+				'message' => 'Success.',
+				'data' => $showUser,
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'Sorry, you can not see users.',
+				'data' => '',
+			], 500);
+		}
 	}
 }
