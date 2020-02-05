@@ -29,7 +29,8 @@ class ArticleRepository
 
 	public function updatePost(Request $request, $articleId)
 	{
-		return Article::where('id', $articleId)->update([
+		return Article::where('id', $articleId)
+						->update([
 							'title' => $request->title,
 							'content' => $request->content,
 						]);

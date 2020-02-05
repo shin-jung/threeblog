@@ -17,7 +17,7 @@ class ArticleMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if (!is_numeric($request->route('id'))||is_null($request->route('id'))) {
+        if (!is_numeric($request->route('id')) || $request->route('id') == '') {
             return response()->json([
                 'success' => false,
                 'message' => 'Sorry, can not find this web.',

@@ -6,7 +6,7 @@ use Closure;
 use JWTAuth;
 use Exception;
 use Tymon\JWTAuth\Http\Middleware\BaseMiddleware;
-use Tymon\JWTAuth\Http\Middleware\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 
 class JwtMiddleware
 {
@@ -21,15 +21,14 @@ class JwtMiddleware
     {
         try {
             $user = JWTAuth::parseToken()->authenticate();
-        } catch (Exception $e) {
-            if ($e instanceof \Tymon\JWTAuth\Http\Middleware\TokenInvalidException) {
+        } catch (TokenInvalidException $e) {
                 return response()->json(['status' => 'Token is Invalid']);
-            } else if ($e instanceof \Tymon\JWTAuth\Http\Middleware\TokenExpiredException) {
-                return response()->json(['status' => 'Token is Expired']);
-            } else {
-                return response()->json(['status' => 'Authorization Token not found']);
+            // } else if ($e instanceof \Tymon\JWTAuth\Http\Middleware\TokenExpiredException) {
+            //     return response()->json(['status' => 'Token is Expired']);
+            // } else {
+            //     return response()->json(['status' => 'Authorization Token not found']);
             }
-        }
+        // }
         return $next($request);
     }
 }

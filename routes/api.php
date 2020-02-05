@@ -26,11 +26,11 @@ Route::group(['prefix' => 'article' , 'middleware' => 'auth.jwt'], function(){
 
 	Route::post('/store', 'ArticleController@store');
 
-	Route::get('/show/{id}', 'ArticleController@show');
+	Route::get('/show/{id?}', 'ArticleController@show');
 
-	Route::post('/update/{id}', 'ArticleController@update')->middleware('article');
+	Route::post('/update/{id?}', 'ArticleController@update')->middleware('article');
 
-	Route::post('/delete/{id}', 'ArticleController@destory')->middleware('article');
+	Route::post('/delete/{id?}', 'ArticleController@destory')->middleware('article');
 });
 
 Route::fallback(function() {

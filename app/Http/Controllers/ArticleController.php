@@ -83,7 +83,7 @@ class ArticleController extends Controller
 				'success' => true,
 				'message' => 'Success',
 				'data' => $showPost,
-			]);
+			], 200);
 		}
 	}
 
