@@ -21,7 +21,19 @@ class ArticleController extends Controller
 	{
 		$showArticle = $this->articleService->indexPost(); 
 		
-    	return $showArticle;  //
+    	if ($showArticle) {
+    		return response()->json([
+    			'success' => true,
+    			'message' => 'Success.',
+    			'data' => $showArticle,
+    		], 200);
+    	} else {
+    		return response()->json([
+    			'success' => false,
+    			'message' => 'Sorry, you can not see any articles.',
+    			'data' => '',
+    		], 500);
+    	}
 	}
 
 	public function store(Request $request)

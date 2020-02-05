@@ -21,7 +21,7 @@ class ApiController extends Controller
     public function login(Request $request)
     {
         $input = $request->only('email', 'password');
-        $token = null;  //
+        $token = null;  
 
         //如果我的token不等於我的輸入就回傳失敗以及無效的密碼和電子郵件
         if (!$token = JWTAuth::attempt($input)) {  //確定身分驗證是否成功
@@ -31,12 +31,13 @@ class ApiController extends Controller
                 'data' => '',
             ], 401);
             //401 需要授權以回應請求。伺服器不知道用戶端身分
+        } else {
+            return response()->json([
+                'success' => true,
+                'message' => 'Success, you are login.',
+                'data' => $token, 
+            ], 200);
         }
-
-        return response()->json([
-            'success' => true,
-            'token' => $token, ///////
-        ]);
     }
 
     public function logout(Request $request)
@@ -72,7 +73,7 @@ class ApiController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Sorry, you can not register.',  //reason
+                'message' => 'Sorry, you have some validate error.',
                 'data' => '',
             ], 500);
         } 
@@ -82,8 +83,7 @@ class ApiController extends Controller
                 'message' => 'Success.',
                 'data' => '',
             ], 200);
-        } ///
-
+        }
         //200 請求成功
     }
 }
