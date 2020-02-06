@@ -2,7 +2,7 @@
 
 namespace App\Services\Api;
 
-use App\Repositories\UserRepository;
+use App\Repositories\Api\UserRepository;
 use Illuminate\Http\Request;
 
 class AuthService
