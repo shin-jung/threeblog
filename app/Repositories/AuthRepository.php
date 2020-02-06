@@ -6,7 +6,7 @@ use App\User;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Request;
 
-class ApiRepository
+class AuthRepository
 {
 	public function register(Request $request)
 	{

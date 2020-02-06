@@ -7,15 +7,15 @@ use App\User;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Support\Facades\Validator;
-use App\Services\ApiService;
+use App\Services\AuthService;
 
-class ApiController extends Controller
+class AuthController extends Controller
 {
-    protected $apiService;
+    protected $authService;
 
-    public function __construct(ApiService $apiService)
+    public function __construct(AuthService $authService)
     {
-        $this->apiService = $apiService;
+        $this->authService = $authService;
     }
 
     public function login(Request $request)
@@ -77,7 +77,7 @@ class ApiController extends Controller
                 'data' => '',
             ], 500);
         } 
-        if ($this->apiService->register($request)) {
+        if ($this->authService->register($request)) {
             return response()->json([
                 'success' => true,
                 'message' => 'Success.',
