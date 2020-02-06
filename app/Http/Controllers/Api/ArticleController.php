@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Article;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Services\ArticleService;
+use App\Services\Api\ArticleService;
 use Illuminate\Support\Facades\Validator;
 
 
