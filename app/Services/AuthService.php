@@ -2,20 +2,20 @@
 
 namespace App\Services;
 
-use App\Repositories\AuthRepository;
+use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
 
 class AuthService
 {
-	protected $authRepository;
+	protected $userRepository;
 
-	public function __construct(AuthRepository $authRepository) //
+	public function __construct(UserRepository $userRepository) //
 	{
-		$this->authRepository = $authRepository;
+		$this->userRepository = $userRepository;
 	}
 
 	public function register(Request $request)
 	{
-		return $this->authRepository->register($request);
+		return $this->userRepository->register($request);
 	}
 }
