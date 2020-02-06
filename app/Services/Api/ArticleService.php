@@ -2,7 +2,7 @@
 
 namespace App\Services\Api;
 
-use App\Repositories\ArticleRepository;
+use App\Repositories\Api\ArticleRepository;
 use Illuminate\Http\Request;
 
 class ArticleService
