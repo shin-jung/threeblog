@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Support\Facades\Validator;
-use App\Services\AuthService;
+use App\Services\Api\AuthService;
 
 class AuthController extends Controller
 {
