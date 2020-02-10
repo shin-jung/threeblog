@@ -39,8 +39,8 @@ class JwtMiddleware
                 return response()->json(['Token Invalid'], 401);
             }
         } catch (TokenInvalidException $e) {
-                return response()->json(['Token Invalid'], 401);
-            }
+            return response()->json(['Token Invalid'], 401);
+        }
         return $next($request);
     }
 }

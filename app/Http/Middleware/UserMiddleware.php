@@ -22,7 +22,7 @@ class UserMiddleware //看會員列表
                 'success' => false,
                 'message' => 'Sorry, you can not look this article.',
                 'data' => '',
-            ], 500);
+            ], 403);
         } 
     
         return $next($request);

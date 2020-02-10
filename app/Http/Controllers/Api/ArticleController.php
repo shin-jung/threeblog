@@ -33,7 +33,7 @@ class ArticleController extends Controller
     			'success' => false,
     			'message' => 'Sorry, you can not see any articles.',
     			'data' => '',
-    		], 500);
+    		], 404);
     	}
 	}
 
@@ -49,7 +49,7 @@ class ArticleController extends Controller
     			'success' => false,
     			'message' => 'Sorry, data could not be added.',
     			'data' => '',
-    		], 500);
+    		], 404);
     	}
 		if ($this->articleService->storePost($request)) {
 			return response()->json([
@@ -60,7 +60,7 @@ class ArticleController extends Controller
 		}
     }
 
-    public function show($articleId)
+    public function show($articleId = null)
     {
     	if (is_numeric($articleId)) {
     		$showPost = $this->articleService->showPost($articleId);
@@ -69,7 +69,7 @@ class ArticleController extends Controller
 				'success' => false,
 				'message' => 'Sorry, data could not be show.',
 				'data' => '',
-			], 500);
+			], 404);
     	}
     	//$showpost是用來接return回來也就是->後的變數
     	//$this是指整個class裡的articless，因為已經有建構子把repositories引入所以只要showpost(articlerepositories內的function)內的變數即可
@@ -78,7 +78,7 @@ class ArticleController extends Controller
 				'success' => false,
 				'message' => 'Sorry, data could not be show.',
 				'data' => '',
-			], 500);
+			], 404);
 		} else {
 			return response()->json([
 				'success' => true,
@@ -88,7 +88,7 @@ class ArticleController extends Controller
 		}
 	}
 
-	public function update(Request $request, $articleId)
+	public function update(Request $request, $articleId = null)
 	{
     	$validator = validator::make($request->all(),[
     		'title' => 'required|alpha_dash',
@@ -100,7 +100,7 @@ class ArticleController extends Controller
     			'success' => false,
     			'message' => 'Sorry, data could not be added.',
     			'data' => '',
-    		], 500);
+    		], 404);
     	}
 
 		if ($this->articleService->updatePost($request, $articleId)) {
@@ -112,7 +112,7 @@ class ArticleController extends Controller
 		} 
 	}
 
-	public function destory($articleId)
+	public function destory($articleId = null)
 	{
 		if ($this->articleService->destoryPost($articleId)) {
 			return response()->json([
@@ -125,7 +125,7 @@ class ArticleController extends Controller
 				'success' => false,
 				'message' => 'Sorry, data could not be delete.',
 				'data' => '',
-			], 500);
+			], 404);
 		}
 	}
 }

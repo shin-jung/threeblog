@@ -61,8 +61,8 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        //
-        'auth.jwt'  =>   \App\Http\Middleware\JwtMiddleware::class, // JWT middleware
+        //以下為自行新增的middleware
+        'auth.jwt'  =>   \App\Http\Middleware\JwtMiddleware::class,
         'user' => \App\Http\Middleware\UserMiddleware::class, 
         'article' => \App\Http\Middleware\ArticleMiddleware::class,
         

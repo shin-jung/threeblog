@@ -16,11 +16,14 @@ Route::post('/login', 'Api\AuthController@login');
 
 Route::post('/register', 'Api\AuthController@register');
 
-Route::get('/user', 'Api\UserController@index')->middleware(['auth.jwt','user']);
+Route::group(['middleware' => 'auth.jwt'], function(){
 
-Route::group(['prefix' => 'article' , 'middleware' => 'auth.jwt'], function(){
+	Route::get('/user', 'Api\UserController@index')->middleware('user');
 
 	Route::post('/logout', 'Api\AuthController@logout');
+});
+
+Route::group(['prefix' => 'article' , 'middleware' => 'auth.jwt'], function(){
 
 	Route::get('/home', 'Api\ArticleController@index');
 
@@ -38,5 +41,5 @@ Route::fallback(function() {
         'success' => false,
     	'message' => 'Sorry, can not find this web.',
     	'data' => '',
-    ], 500);
+    ], 403);
 });
