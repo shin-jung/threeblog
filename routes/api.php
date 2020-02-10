@@ -20,8 +20,6 @@ Route::group(['middleware' => 'auth.jwt'], function(){
 
 	Route::get('/user', 'Api\UserController@index')->middleware('user');
 
-	// Route::get('/user', 'Api\UserController@index');
-
 	Route::post('/logout', 'Api\AuthController@logout');
 });
 
