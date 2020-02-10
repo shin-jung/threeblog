@@ -6,11 +6,12 @@ use Closure;
 use JWTAuth;
 use Exception;
 use Tymon\JWTAuth\Token;
+use Tymon\JWTAuth\Http\Middleware\BaseMiddleware;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 
-class JwtMiddleware
+class JwtMiddleware extends BaseMiddleware
 {
     /**
      * Handle an incoming request.
@@ -22,25 +23,45 @@ class JwtMiddleware
     public function handle($request, Closure $next)
     {
         try {
-            JWTAuth::parseToken();
-            $token = JWTAuth::getToken();
-        } catch (JWTException $e) {
-            return response()->json(['Token missing or badly formatted'], 401);
-        }
-        try {
-            $request->user = JWTAuth::authenticate($token);
-        } catch (TokenExpiredException $e) {
-            try {
-                $token = JWTAuth::refresh($token);
-                JWTAuth::setToken($token);
-                var_dump($token);
-                $request->user = JWTAuth::authenticate($token);
-            } catch (TokenInvalidException $e) {
-                return response()->json(['Token Invalid'], 401);
+            
+            if(!$token = JWTAuth::parseToken()->authenticate()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Sorry user not found',
+                    'data' => '',
+                ], 404);
             }
         } catch (TokenInvalidException $e) {
-            return response()->json(['Token Invalid'], 401);
+            return response()->json([
+                'success' => false,
+                'message' => 'Sorry, token is invalid',
+                'data' => '',
+            ], 404);
+        } catch (TokenExpiredException $e) {
+            try {
+                $token = JWTAuth::refresh(JWTAuth::getToken());
+                // JWTAuth::setToken($token)->toUser();
+                $response = $next($request);
+                // var_dump($token);
+                $response->headers->set('Authorization', 'Bearer '. $token);
+                // dd($response);
+                //return $this->setAuthenticationHeader($next($request), $token);
+            } catch (JWTException $e) {
+                // dd(123);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Sorry, token is expired.',
+                    'data' => '',
+                ], 404);
+            }
+        } catch (JWTException $e) {
+            // dd(412);
+            return response()->json([
+                'success' => false,
+                'message' => 'Sorry, token is absent',
+                'data' => '',
+            ], 404);
         }
-        return $next($request);
+        return $this->setAuthenticationHeader($next($request), $token);
     }
 }
