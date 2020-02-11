@@ -20,7 +20,7 @@ class ArticleController extends Controller
 
     public function index()
 	{
-		$showArticle = $this->articleService->indexPost(); 
+		$showArticle = $this->articleService->indexPost();
 		
     	if ($showArticle) {
     		return response()->json([
@@ -38,7 +38,7 @@ class ArticleController extends Controller
 	}
 
 	public function store(Request $request)
-    {    	
+    {
     	$validator = validator::make($request->all(),[
     		'title' => 'required|alpha_dash',
     		'content' => 'required|alpha_dash',
@@ -67,7 +67,7 @@ class ArticleController extends Controller
     	} else {
 			return response()->json([
 				'success' => false,
-				'message' => 'Sorry, data could not be show.',
+				'message' => 'Sorry, web could not be show.',
 				'data' => '',
 			], 404);
     	}
@@ -76,7 +76,7 @@ class ArticleController extends Controller
 		if ($showPost->isEmpty()) {
 			return response()->json([
 				'success' => false,
-				'message' => 'Sorry, data could not be show.',
+				'message' => 'Sorry, web could not be show.',
 				'data' => '',
 			], 404);
 		} else {
@@ -108,8 +108,8 @@ class ArticleController extends Controller
                 'success' => true,
                 'message' => 'Success.',
                 'data' => '',
-			], 200);			
-		} 
+			], 200);
+		}
 	}
 
 	public function destory($articleId = null)
@@ -129,4 +129,3 @@ class ArticleController extends Controller
 		}
 	}
 }
-

@@ -20,7 +20,7 @@ class ArticleRepository
     		'content' => $request->content,
     		'author' => JWTAuth::user()->name,
 		]);
-	} 
+	}
 
 	public function showPost($articleId)
 	{
@@ -41,5 +41,3 @@ class ArticleRepository
 		return Article::where('id', $articleId)->delete();
 	}
 }
-
-

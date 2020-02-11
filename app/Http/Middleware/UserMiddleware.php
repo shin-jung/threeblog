@@ -15,7 +15,7 @@ class UserMiddleware //看會員列表
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next) //
+    public function handle($request, Closure $next)
     {
         if (!JWTAuth::user() || JWTAuth::user()->admin != 'admin') {
             return response()->json([
@@ -23,8 +23,7 @@ class UserMiddleware //看會員列表
                 'message' => 'Sorry, you can not look this article.',
                 'data' => '',
             ], 403);
-        } 
-    
+        }
         return $next($request);
     }
 }

@@ -23,7 +23,6 @@ class JwtMiddleware extends BaseMiddleware
     public function handle($request, Closure $next)
     {
         try {
-            
             if(!$token = JWTAuth::parseToken()->authenticate()) {
                 return response()->json([
                     'success' => false,
@@ -40,14 +39,9 @@ class JwtMiddleware extends BaseMiddleware
         } catch (TokenExpiredException $e) {
             try {
                 $token = JWTAuth::refresh(JWTAuth::getToken());
-                // JWTAuth::setToken($token)->toUser();
                 $response = $next($request);
-                // var_dump($token);
                 $response->headers->set('Authorization', 'Bearer '. $token);
-                // dd($response);
-                //return $this->setAuthenticationHeader($next($request), $token);
             } catch (JWTException $e) {
-                // dd(123);
                 return response()->json([
                     'success' => false,
                     'message' => 'Sorry, token is expired.',
@@ -55,7 +49,6 @@ class JwtMiddleware extends BaseMiddleware
                 ], 404);
             }
         } catch (JWTException $e) {
-            // dd(412);
             return response()->json([
                 'success' => false,
                 'message' => 'Sorry, token is absent',

@@ -63,9 +63,8 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         //以下為自行新增的middleware
         'auth.jwt'  =>   \App\Http\Middleware\JwtMiddleware::class,
-        'user' => \App\Http\Middleware\UserMiddleware::class, 
+        'user' => \App\Http\Middleware\UserMiddleware::class,
         'article' => \App\Http\Middleware\ArticleMiddleware::class,
-        
     ];
 
     /**
