@@ -22,7 +22,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $input = $request->only('email', 'password');
-        $token = null;  
+        $token = null;
 
         //如果我的token不等於我的輸入就回傳失敗以及無效的密碼和電子郵件
         if (!$token = JWTAuth::attempt($input)) {  //確定身分驗證是否成功
@@ -36,7 +36,7 @@ class AuthController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Success, you are login.',
-                'data' => $token, 
+                'data' => $token,
             ], 200);
         }
     }
@@ -56,18 +56,17 @@ class AuthController extends Controller
                 'success' => false,
                 'message' => 'Sorry, the user cannot be logged out.',
                 'data' => '',
-            ], 500);
+            ], 404);
         }
         //try-使用異常的函數應該位於"try"代碼塊內。如果沒有觸發異常，則代碼將照常繼續執行。但如果一常被觸發，會拋出一個異常
         //catch-會捕獲try發出的異常，並創建一個包含異常信息的對象
-        //500 伺服器端發生未知或無法處理的錯誤
     }
 
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(),[
-            'name' => 'required|string',
-            'email' => 'required|string|email|unique:users',
+            'name' => 'required|string|max:20',
+            'email' => 'required|string|email|max:40|unique:users',
             'password' => 'required|string|min:6|max:20|confirmed',
         ]);
 
@@ -76,8 +75,8 @@ class AuthController extends Controller
                 'success' => false,
                 'message' => 'Sorry, you have some validate error.',
                 'data' => '',
-            ], 500);
-        } 
+            ], 404);
+        }
         if ($this->authService->register($request)) {
             return response()->json([
                 'success' => true,
@@ -85,6 +84,5 @@ class AuthController extends Controller
                 'data' => '',
             ], 200);
         }
-        //200 請求成功
     }
 }

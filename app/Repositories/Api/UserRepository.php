@@ -21,7 +21,4 @@ class UserRepository
             'password' => bcrypt($request->password),
         ]);
 	}
-
 }
-
-
