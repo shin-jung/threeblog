@@ -23,7 +23,7 @@ Route::group(['middleware' => 'auth.jwt'], function(){
 	Route::post('/logout', 'Api\AuthController@logout');
 });
 
-Route::group(['prefix' => 'article' , 'middleware' => 'auth.jwt'], function(){
+Route::group(['prefix' => 'article', 'middleware' => 'auth.jwt'], function(){
 
 	Route::get('/home', 'Api\ArticleController@index');
 

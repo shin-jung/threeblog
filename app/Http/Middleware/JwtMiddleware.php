@@ -28,32 +28,33 @@ class JwtMiddleware extends BaseMiddleware
                     'success' => false,
                     'message' => 'Sorry user not found',
                     'data' => '',
-                ], 404);
+                ], 401);
             }
         } catch (TokenInvalidException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Sorry, token is invalid',
                 'data' => '',
-            ], 404);
+            ], 401);
         } catch (TokenExpiredException $e) {
             try {
                 $token = JWTAuth::refresh(JWTAuth::getToken());
                 $response = $next($request);
-                $response->headers->set('Authorization', 'Bearer '. $token);
+                // $response->headers->set('Authorization', 'Bearer '. $token); 前端測試
+                var_dump($token);
             } catch (JWTException $e) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Sorry, token is expired.',
+                    'message' => 'Sorry, token is wrong',
                     'data' => '',
-                ], 404);
+                ], 401);
             }
         } catch (JWTException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Sorry, token is absent',
                 'data' => '',
-            ], 404);
+            ], 401);
         }
         return $this->setAuthenticationHeader($next($request), $token);
     }
