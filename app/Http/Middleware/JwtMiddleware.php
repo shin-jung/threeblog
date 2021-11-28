@@ -23,25 +23,15 @@ class JwtMiddleware extends BaseMiddleware
     public function handle($request, Closure $next)
     {
         try {
-            if(!$token = JWTAuth::parseToken()->authenticate()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Sorry user not found',
-                    'data' => '',
-                ], 401);
-            }
-        } catch (TokenInvalidException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Sorry, token is invalid',
-                'data' => '',
-            ], 401);
+            JWTAuth::parseToken()->authenticate();
+            return $next($request);
         } catch (TokenExpiredException $e) {
             try {
                 $token = JWTAuth::refresh(JWTAuth::getToken());
+                $newToken = $token;
                 $response = $next($request);
-                // $response->headers->set('Authorization', 'Bearer '. $token); 前端測試
-                var_dump($token);
+                $response->headers->set('Authorization', 'Bearer '. $token);
+                // refresh後的token需進行setToken轉換後才可以取得payload內的sub（取得id）
             } catch (JWTException $e) {
                 return response()->json([
                     'success' => false,
@@ -56,6 +46,7 @@ class JwtMiddleware extends BaseMiddleware
                 'data' => '',
             ], 401);
         }
+        // 將refresh後的token更新至資料庫的token欄位
         return $this->setAuthenticationHeader($next($request), $token);
     }
 }

@@ -31,7 +31,7 @@ class AuthController extends Controller
                 'message' => 'Invalid Email or Password.',
                 'data' => '',
             ], 401);
-            //401 需要授權以回應請求。伺服器不知道用戶端身分
+        //401 需要授權以回應請求。伺服器不知道用戶端身分
         } else {
             return response()->json([
                 'success' => true,
@@ -64,25 +64,28 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $validator = Validator::make($request->all(),[
-            'name' => 'required|string|max:20',
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:20',
             'email' => 'required|string|email|max:40|unique:users',
             'password' => 'required|string|min:6|max:20|confirmed',
-        ]);
-
-        if ($validator->fails()) {
+            ]);
+            if ($validator->fails()) {
+                throw new \Exception($validator->errors()->first(), 422);
+            }
+            if ($this->authService->register($request)) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Success.',
+                    'data' => '',
+                ], 200);
+            }
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Sorry, you have some validate error.',
+                'message' => $e->getMessage().'#'.$e->getLine(),
                 'data' => '',
-            ], 404);
-        }
-        if ($this->authService->register($request)) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Success.',
-                'data' => '',
-            ], 200);
+            ], empty($e->getCode()) ? 500 : $e->getCode());
         }
     }
 }
