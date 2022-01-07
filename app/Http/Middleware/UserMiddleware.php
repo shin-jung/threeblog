@@ -17,7 +17,7 @@ class UserMiddleware //看會員列表
      */
     public function handle($request, Closure $next)
     {
-        if (!JWTAuth::user() || JWTAuth::user()->admin != 'admin') {
+        if (!JWTAuth::user() || JWTAuth::user()->is_admin != true) {
             return response()->json([
                 'success' => false,
                 'message' => 'Sorry, you can not look this article.',

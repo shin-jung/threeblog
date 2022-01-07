@@ -22,7 +22,7 @@ class ArticleMiddleware
                 'success' => false,
                 'message' => 'Sorry, can not find this web.',
             ], 403);
-        } 
+        }
 
         $findAuthor = Article::where('id', $request->route('id'))->first();
         
@@ -33,7 +33,7 @@ class ArticleMiddleware
             ], 403);
         }
 
-        if (JWTAuth::user()->admin != 'admin' && JWTAuth::user()->name != $findAuthor->author) {
+        if (JWTAuth::user()->is_admin != true && JWTAuth::user()->name != $findAuthor->author) {
             return response()->json([
                 'success' => false,
                 'message' => 'Sorry, can not do it.',
