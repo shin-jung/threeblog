@@ -36,7 +36,7 @@ class ArticleRepository
                         ]);
     }
 
-    public function destoryPost($articleId)
+    public function destroyPost($articleId)
     {
         return Article::where('id', $articleId)->delete();
     }

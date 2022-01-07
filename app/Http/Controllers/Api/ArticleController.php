@@ -112,9 +112,9 @@ class ArticleController extends Controller
         }
     }
 
-    public function destory($articleId = null)
+    public function destroy($articleId = null)
     {
-        if ($this->articleService->destoryPost($articleId)) {
+        if ($this->articleService->destroyPost($articleId)) {
             return response()->json([
                 'success' => true,
                 'message' => 'Success.',
