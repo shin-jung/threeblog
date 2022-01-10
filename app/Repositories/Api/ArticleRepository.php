@@ -2,7 +2,8 @@
 
 namespace App\Repositories\Api;
 
-use App\Article;
+use App\Models\ArticleMessage;
+use App\Models\Article;
 use JWTAuth;
 use Illuminate\Http\Request;
 
@@ -39,5 +40,14 @@ class ArticleRepository
     public function destroyPost($articleId)
     {
         return Article::where('id', $articleId)->delete();
+    }
+
+    public function createMessageToArticleDetail($request, $userId)
+    {
+        return ArticleMessage::create([
+            'article_id' => $request['article_id'],
+            'content' => $request['message'],
+            'user_id' => $userId
+        ]);
     }
 }

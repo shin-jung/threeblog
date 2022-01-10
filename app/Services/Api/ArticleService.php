@@ -38,4 +38,17 @@ class ArticleService
     {
         return $this->articleRepository->destroyPost($articleId);
     }
+
+    public function createMessageToArticleInfo($request, $userId)
+    {
+        $searchArticle = $this->articleRepository->showPost($request['article_id']);
+        if (is_null($searchArticle)) {
+            throw new \Exception('查無文章', 403);
+        }
+        return $this->articleRepository->createMessageToArticleDetail($request, $userId);
+    }
+
+    public function doLikeArticle($request, $userId)
+    {
+    }
 }

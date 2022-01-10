@@ -128,4 +128,37 @@ class ArticleController extends Controller
             ], 404);
         }
     }
+
+    public function createMessageToArticle(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'article_id' => 'required|integer',
+                'message' => 'string',
+            ]);
+            if ($validator->fails()) {
+                throw new \Exception($validator->errors()->first(), 422);
+            }
+            $message = $this->articleService->createMessageToArticleInfo($request->all(), JWTAuth::user()->id);
+            if ($message) {
+                return response()->json([
+                    'success' => true,
+                    'message' => '新增文章留言成功',
+                    'data' => ''
+                ], 200);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => '新增文章留言失敗',
+                    'data' => ''
+                ], 500);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage().'#'.$e->getLine(),
+                'data' => ''
+            ], empty($e->getCode()) ? 500 : $e->getCode());
+        }
+    }
 }
