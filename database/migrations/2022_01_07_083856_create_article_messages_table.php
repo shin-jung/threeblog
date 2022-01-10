@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateArticleTable extends Migration
+class CreateArticleMessagesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,13 @@ class CreateArticleTable extends Migration
      */
     public function up()
     {
-        Schema::create('article', function (Blueprint $table) {
+        Schema::create('article_messages', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('author');
-            $table->string('title');
+            $table->integer('article_id');
+            $table->integer('user_id');
+            $table->integer('count_like')->default('0');
             $table->string('content');
+            $table->json('file');
             $table->timestamps();
         });
     }
@@ -29,6 +31,6 @@ class CreateArticleTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('article');
+        Schema::dropIfExists('article_messages');
     }
 }
