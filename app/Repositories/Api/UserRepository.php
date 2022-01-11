@@ -18,3 +18,18 @@ class UserRepository
             'email' => $request->email,
             'password' => bcrypt($request->password),
         ]);
+    }
+
+    public function getUserById($userId)
+    {
+        return User::where('id', $userId)->first();
+    }
+
+    public function updateUserToken($userId, $token)
+    {
+        return User::where('id', $userId)
+                    ->update([
+                        'token' => $token
+                    ]);
+    }
+}

@@ -3,7 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use App\User;
+use App\Models\User;
 use JWTAuth;
 
 class UserMiddleware //看會員列表

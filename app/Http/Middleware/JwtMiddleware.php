@@ -3,13 +3,11 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use JWTAuth;
-use Exception;
-use Tymon\JWTAuth\Token;
 use Tymon\JWTAuth\Http\Middleware\BaseMiddleware;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
-use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use App\Models\User;
 
 class JwtMiddleware extends BaseMiddleware
 {
@@ -32,6 +30,8 @@ class JwtMiddleware extends BaseMiddleware
                 $response = $next($request);
                 $response->headers->set('Authorization', 'Bearer '. $token);
                 // refresh後的token需進行setToken轉換後才可以取得payload內的sub（取得id）
+                JWTAuth::setToken($newToken)->toUser();
+                $id = JWTAuth::getPayLoad($newToken)['sub'];
             } catch (JWTException $e) {
                 return response()->json([
                     'success' => false,
@@ -47,6 +47,7 @@ class JwtMiddleware extends BaseMiddleware
             ], 401);
         }
         // 將refresh後的token更新至資料庫的token欄位
+        User::where('id', $id)->update(['remember_token' => $token]);
         return $this->setAuthenticationHeader($next($request), $token);
     }
 }
