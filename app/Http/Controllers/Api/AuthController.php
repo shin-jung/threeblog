@@ -70,7 +70,7 @@ class AuthController extends Controller
             if ($validator->fails()) {
                 throw new \Exception($validator->errors()->first(), 422);
             }
-            if ($this->authService->register($request)) {
+            if ($this->userService->register($request)) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Success.',
