@@ -28,11 +28,13 @@ class UserService
                 JWTAuth::setToken($getUserInfo['token'])->invalidate();
             } catch (JWTException $e) {
                 $this->userRepository->updateUserToken($userId, $token);
-                return $token;
+                $data['token'] = $token;
+                return $data;
             }
         }
         $this->userRepository->updateUserToken($userId, $token);
-        return $token;
+        $data['token'] = $token;
+        return $data;
     }
     
     public function register($request)
