@@ -34,11 +34,11 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Success, you are login.',
-            'data' => $token,
+            'data' => $userData,
         ], 200);
     }
 
-    public function logout(Request $request)
+    public function logout()
     {
         try {
             JWTAuth::invalidate(JWTAuth::getToken());
