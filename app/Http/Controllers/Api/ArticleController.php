@@ -70,31 +70,25 @@ class ArticleController extends Controller
         }
     }
 
-    public function show($articleId = null)
+    public function show(Request $request)
     {
-        if (is_numeric($articleId)) {
-            $showPost = $this->articleService->showPost($articleId);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Sorry, web could not be show.',
-                'data' => '',
-            ], 404);
-        }
-        //$showpost是用來接return回來也就是->後的變數
-        //$this是指整個class裡的articless，因為已經有建構子把repositories引入所以只要showpost(articlerepositories內的function)內的變數即可
-        if ($showPost->isEmpty()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Sorry, web could not be show.',
-                'data' => '',
-            ], 404);
-        } else {
+        try {
+            if (!is_numeric($request->article_id)) {
+                throw new \Exception('格式錯誤', 422);
+            }
+            $showPost = $this->articleService->showPost($request->article_id);
+
             return response()->json([
                 'success' => true,
-                'message' => 'Success',
+                'message' => '成功取得文章',
                 'data' => $showPost,
             ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage().'#'.$e->getLine(),
+                'data' => '',
+            ], empty($e->getCode()) ? 500 : $e->getCode());
         }
     }
 

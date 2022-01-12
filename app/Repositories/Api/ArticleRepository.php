@@ -23,7 +23,7 @@ class ArticleRepository
 
     public function showPost($articleId)
     {
-        return Article::where('id', $articleId)->get();
+        return Article::where('id', $articleId)->first();
     }
 
     public function updatePost(Request $request, $articleId)

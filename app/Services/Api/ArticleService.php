@@ -25,6 +25,10 @@ class ArticleService
 
     public function showPost($articleId)
     {
+        $getArticle = $this->articleRepository->showPost($articleId);
+        if (is_null($getArticle)) {
+            throw new \Exception('查無文章', 403);
+        }
         return $this->articleRepository->showPost($articleId);
     }
 

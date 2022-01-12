@@ -27,7 +27,7 @@ Route::group(['prefix' => 'article', 'middleware' => 'auth.jwt'], function () {
 
     Route::post('/store', 'Api\ArticleController@store');
 
-    Route::get('/show/{id?}', 'Api\ArticleController@show');
+    Route::get('/show', 'Api\ArticleController@show');
     // 新增文章留言
     Route::post('/leave-message-to-article', 'Api\ArticleController@createMessageToArticle');
 
