@@ -4,8 +4,6 @@ namespace App\Repositories\Api;
 
 use App\Models\ArticleMessage;
 use App\Models\Article;
-use JWTAuth;
-use Illuminate\Http\Request;
 
 class ArticleRepository
 {
@@ -14,12 +12,12 @@ class ArticleRepository
         return Article::all();
     }
 
-    public function storePost(Request $request)
+    public function storePost($request, $userId)
     {
         return Article::create([
             'title' => $request->title,
             'content' => $request->content,
-            'author' => JWTAuth::user()->name,
+            'author' => $userId,
         ]);
     }
 

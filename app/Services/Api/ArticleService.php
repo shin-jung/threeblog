@@ -3,7 +3,6 @@
 namespace App\Services\Api;
 
 use App\Repositories\Api\ArticleRepository;
-use Illuminate\Http\Request;
 
 class ArticleService
 {
@@ -19,9 +18,9 @@ class ArticleService
         return $this->articleRepository->indexPost();
     }
 
-    public function storePost(Request $request)
+    public function storePost($request, $userId)
     {
-        return $this->articleRepository->storePost($request);
+        return $this->articleRepository->storePost($request, $userId);
     }
 
     public function showPost($articleId)

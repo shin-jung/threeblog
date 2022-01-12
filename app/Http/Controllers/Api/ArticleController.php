@@ -39,24 +39,34 @@ class ArticleController extends Controller
 
     public function store(Request $request)
     {
-        $validator = validator::make($request->all(), [
-            'title' => 'required|alpha_dash',
-            'content' => 'required|alpha_dash',
-        ]);
-
-        if ($validator->fails()) {
+        try {
+            $validator = validator::make($request->all(), [
+                'title' => 'required|alpha_dash',
+                'content' => 'required|alpha_dash',
+            ]);
+            if ($validator->fails()) {
+                throw new \Exception($validator->errors()->first(), 422);
+            }
+            $data = $this->articleService->storePost($request, JWTAuth::user()->id);
+            if ($data) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Success',
+                    'data' => $data,
+                ], 200);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Fail',
+                    'data' => [],
+                ], 500);
+            }
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Sorry, data could not be added.',
-                'data' => '',
-            ], 404);
-        }
-        if ($this->articleService->storePost($request)) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Success.',
-                'data' => '',
-            ], 200);
+                'message' => $e->getMessage() . '#' . $e->getLine(),
+                'data' => ''
+            ], empty($e->getCode()) ? 500 : $e->getCode());
         }
     }
 
