@@ -12,27 +12,28 @@ class UserController extends Controller
     protected $userService;
 
     public function __construct(UserService $userService)
-	{
-		$this->userService = $userService;
-	}
+    {
+        $this->userService = $userService;
+    }
 
-	public function index()
-	{
-		
-		$showUser = $this->userService->indexUser(); 
+    public function index()
+    {
+        try {
+            $showUser = $this->userService->indexUser();
 
-		if ($showUser) {
-			return response()->json([
-				'success' => true,
-				'message' => 'Success.',
-				'data' => $showUser,
-			], 200);
-		} else {
-			return response()->json([
-				'success' => false,
-				'message' => 'Sorry, you can not see users.',
-				'data' => '',
-			], 500);
-		}
-	}
+            if ($showUser) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Success.',
+                    'data' => $showUser,
+                ], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage() . '#' . $e->getLine(),
+                'data' => ''
+            ], empty($e->getCode()) ? 500 : $e->getCode());
+        }
+    }
 }
