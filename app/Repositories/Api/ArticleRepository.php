@@ -62,4 +62,10 @@ class ArticleRepository
                                 'content' => $request['message']
                             ]);
     }
+
+    public function deleteMessageToArticle($articleMessageId)
+    {
+        return ArticleMessage::where('id', $articleMessageId)
+                            ->delete();
+    }
 }

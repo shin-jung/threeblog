@@ -62,4 +62,16 @@ class ArticleService
         }
         return $this->articleRepository->modifyMessageToArticle($request);
     }
+
+    public function deleteMessageToArticleInfo($request, $userId)
+    {
+        $searchArticleMessage = $this->articleRepository->getArticleMessageById($request['article_message_id']);
+        if (is_null($searchArticleMessage)) {
+            throw new \Exception('查無文章留言', 403);
+        }
+        if ($searchArticleMessage['user_id'] != $userId) {
+            throw new \Exception('你沒有資格刪除文章啦!', 403);
+        }
+        return $this->articleRepository->deleteMessageToArticle($request['article_message_id']);
+    }
 }
