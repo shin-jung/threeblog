@@ -26,9 +26,9 @@ class ArticleRepository
         return Article::where('id', $articleId)->first();
     }
 
-    public function updatePost(Request $request, $articleId)
+    public function updatePost($request)
     {
-        return Article::where('id', $articleId)
+        return Article::where('id', $request->article_id)
                         ->update([
                             'title' => $request->title,
                             'content' => $request->content,

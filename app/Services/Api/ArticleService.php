@@ -32,9 +32,9 @@ class ArticleService
         return $this->articleRepository->showPost($articleId);
     }
 
-    public function updatePost(Request $request, $articleId)
+    public function updatePost($request)
     {
-        return $this->articleRepository->updatePost($request, $articleId);
+        return $this->articleRepository->updatePost($request);
     }
 
     public function destroyPost($articleId)

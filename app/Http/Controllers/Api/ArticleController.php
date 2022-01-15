@@ -92,27 +92,38 @@ class ArticleController extends Controller
         }
     }
 
-    public function update(Request $request, $articleId = null)
+    public function update(Request $request)
     {
-        $validator = validator::make($request->all(), [
-            'title' => 'required|alpha_dash',
-            'content' => 'required|alpha_dash',
-        ]);
+        try {
+            $validator = validator::make($request->all(), [
+                'title' => 'required|alpha_dash',
+                'content' => 'required|alpha_dash',
+                'article_id' => 'required|integer'
+            ]);
 
-        if ($validator->fails()) {
+            if ($validator->fails()) {
+                throw new \Exception($validator->errors()->first(), 422);
+            }
+
+            if ($this->articleService->updatePost($request)) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Success.',
+                    'data' => '',
+                ], 200);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Fail',
+                    'data' => [],
+                ], 500);
+            }
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Sorry, data could not be added.',
+                'message' => $e->getMessage().'#'.$e->getLine(),
                 'data' => '',
-            ], 404);
-        }
-
-        if ($this->articleService->updatePost($request, $articleId)) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Success.',
-                'data' => '',
-            ], 200);
+            ], empty($e->getCode()) ? 500 : $e->getCode());
         }
     }
 

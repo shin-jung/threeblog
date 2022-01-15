@@ -31,7 +31,7 @@ Route::group(['prefix' => 'article', 'middleware' => 'auth.jwt'], function () {
     // 新增文章留言
     Route::post('/leave-message-to-article', 'Api\ArticleController@createMessageToArticle');
 
-    Route::post('/update/{id?}', 'Api\ArticleController@update')->middleware('article');
+    Route::put('/update', 'Api\ArticleController@update')->middleware('article');
 
     Route::post('/delete/{id?}', 'Api\ArticleController@destroy')->middleware('article');
 });

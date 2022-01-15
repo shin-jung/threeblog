@@ -3,7 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use App\Article;
+use App\Models\Article;
 use JWTAuth;
 
 class ArticleMiddleware
@@ -17,26 +17,24 @@ class ArticleMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if (!is_numeric($request->route('id')) || $request->route('id') == '') {
+        if (!is_numeric(JWTAuth::user()->id) || JWTAuth::user()->id == '') {
             return response()->json([
                 'success' => false,
-                'message' => 'Sorry, can not find this web.',
+                'message' => 'Sorry, can not find your information',
             ], 403);
         }
-
-        $findAuthor = Article::where('id', $request->route('id'))->first();
+        $article = Article::where('id', $request->article_id)->first();
         
-        if (is_null($findAuthor)) {
+        if (is_null($article)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Sorry, can not find this web.',
+                'message' => 'Sorry, can not find this article.',
             ], 403);
         }
-
-        if (JWTAuth::user()->is_admin != true && JWTAuth::user()->name != $findAuthor->author) {
+        if (JWTAuth::user()->is_admin != true && JWTAuth::user()->id != $article->author) {
             return response()->json([
                 'success' => false,
-                'message' => 'Sorry, can not do it.',
+                'message' => 'Sorry, you can not do it.',
             ], 403);
         }
 
