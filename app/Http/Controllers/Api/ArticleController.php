@@ -199,7 +199,7 @@ class ArticleController extends Controller
             $validator = Validator::make($request->all(), [
                 'article_message_id' => 'required|integer',
                 'message' => 'string',
-            ]);
+                ]);
             if ($validator->fails()) {
                 throw new \Exception($validator->errors()->first(), 422);
             }
@@ -248,6 +248,34 @@ class ArticleController extends Controller
                     'message' => '刪除文章留言失敗',
                     'data' => ''
                 ], 500);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage().'#'.$e->getLine(),
+                'data' => ''
+            ], empty($e->getCode()) ? 500 : $e->getCode());
+        }
+    }
+
+
+    
+    public function likeArticle(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'article_id' => 'required|integer',
+            ]);
+            if ($validator->fails()) {
+                throw new \Exception($validator->errors()->first(), 422);
+            }
+            $message = $this->articleService->doLikeArticle($request, JWTAuth::user()->id);
+            if ($message) {
+                return response()->json([
+                    'success' => true,
+                    'message' => '喜歡文章成功',
+                    'data' => ''
+                ], 200);
             }
         } catch (\Exception $e) {
             return response()->json([

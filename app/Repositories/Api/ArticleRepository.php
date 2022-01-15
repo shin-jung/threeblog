@@ -4,6 +4,7 @@ namespace App\Repositories\Api;
 
 use App\Models\ArticleMessage;
 use App\Models\Article;
+use App\Models\LikeToArticle;
 
 class ArticleRepository
 {
@@ -67,5 +68,26 @@ class ArticleRepository
     {
         return ArticleMessage::where('id', $articleMessageId)
                             ->delete();
+    }
+
+    public function getLikeToArticle($articleId, $userId)
+    {
+        return LikeToArticle::where('article_id', $articleId)
+                            ->where('user_id', $userId)
+                            ->first();
+    }
+
+    public function addLikeArticle($articleId)
+    {
+        return Article::where('id', $articleId)
+                    ->increment('count_like', 1);
+    }
+
+    public function createLikeArticle($articleId, $userId)
+    {
+        return LikeToArticle::create([
+            'article_id' => $articleId,
+            'user_id' => $userId
+        ]);
     }
 }

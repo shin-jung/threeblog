@@ -10,6 +10,6 @@ class Article extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'author', 'title', 'content',
+        'author', 'title', 'content', 'count_like',
     ];
 }

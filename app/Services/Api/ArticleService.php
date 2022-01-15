@@ -3,6 +3,7 @@
 namespace App\Services\Api;
 
 use App\Repositories\Api\ArticleRepository;
+use DB;
 
 class ArticleService
 {
@@ -73,5 +74,27 @@ class ArticleService
             throw new \Exception('你沒有資格刪除文章啦!', 403);
         }
         return $this->articleRepository->deleteMessageToArticle($request['article_message_id']);
+    }
+
+    public function doLikeArticle($request, $userId)
+    {
+        // 只能按一次讚
+        DB::beginTransaction();
+        $searchLikeToArticle = $this->articleRepository->getLikeToArticle($request['article_id'], $userId);
+        if (!is_null($searchLikeToArticle)) {
+            throw new \Exception('看過讚了啦', 403);
+        }
+        $addLikeArticle = $this->articleRepository->addLikeArticle($request['article_id']);
+        if (!$addLikeArticle) {
+            DB::rollback();
+            throw new \Exception('增加文章按讚數失敗', 500);
+        }
+        $createLikeToArticle = $this->articleRepository->createLikeArticle($request['article_id'], $userId);
+        if (!$addLikeArticle) {
+            DB::rollback();
+            throw new \Exception('文章按讚失敗', 500);
+        }
+        DB::commit();
+        return true;
     }
 }

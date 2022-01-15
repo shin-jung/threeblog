@@ -28,6 +28,7 @@ Route::group(['prefix' => 'article', 'middleware' => 'auth.jwt'], function () {
     Route::post('/store', 'Api\ArticleController@store');
 
     Route::get('/show', 'Api\ArticleController@show');
+
     Route::group(['prefix' => 'message'], function () {
         // 新增文章留言
         Route::post('/leave-message-to-article', 'Api\ArticleController@createMessageToArticle');
@@ -36,10 +37,11 @@ Route::group(['prefix' => 'article', 'middleware' => 'auth.jwt'], function () {
         // 刪除文章留言
         Route::post('/delete_leave_message', 'Api\ArticleController@deleteLeaveMessage');
     });
-
     Route::put('/update', 'Api\ArticleController@update')->middleware('article');
 
     Route::post('/delete', 'Api\ArticleController@destroy')->middleware('article');
+    
+    Route::post('/like-article', 'Api\ArticleController@likeArticle');
 });
 
 Route::fallback(function () {
