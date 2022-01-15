@@ -37,9 +37,9 @@ class ArticleService
         return $this->articleRepository->updatePost($request);
     }
 
-    public function destroyPost($articleId)
+    public function destroyPost($request)
     {
-        return $this->articleRepository->destroyPost($articleId);
+        return $this->articleRepository->destroyPost($request->article_id);
     }
 
     public function createMessageToArticleInfo($request, $userId)
