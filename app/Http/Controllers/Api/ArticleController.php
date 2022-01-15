@@ -192,4 +192,37 @@ class ArticleController extends Controller
             ], empty($e->getCode()) ? 500 : $e->getCode());
         }
     }
+
+    public function modifyLeaveMessage(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'article_message_id' => 'required|integer',
+                'message' => 'string',
+            ]);
+            if ($validator->fails()) {
+                throw new \Exception($validator->errors()->first(), 422);
+            }
+            $message = $this->articleService->modifyMessageToArticleInfo($request->all(), JWTAuth::user()->id);
+            if ($message) {
+                return response()->json([
+                    'success' => true,
+                    'message' => '修改文章留言成功',
+                    'data' => ''
+                ], 200);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => '修改文章留言失敗',
+                    'data' => ''
+                ], 500);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage().'#'.$e->getLine(),
+                'data' => ''
+            ], empty($e->getCode()) ? 500 : $e->getCode());
+        }
+    }
 }

@@ -49,4 +49,17 @@ class ArticleRepository
             'file' => json_encode([])
         ]);
     }
+
+    public function getArticleMessageById($articleMessageId)
+    {
+        return ArticleMessage::where('id', $articleMessageId)->first();
+    }
+    
+    public function modifyMessageToArticle($request)
+    {
+        return ArticleMessage::where('id', $request['article_message_id'])
+                            ->update([
+                                'content' => $request['message']
+                            ]);
+    }
 }
