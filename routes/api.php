@@ -28,8 +28,10 @@ Route::group(['prefix' => 'article', 'middleware' => 'auth.jwt'], function () {
     Route::post('/store', 'Api\ArticleController@store');
 
     Route::get('/show', 'Api\ArticleController@show');
-    // 新增文章留言
-    Route::post('/leave-message-to-article', 'Api\ArticleController@createMessageToArticle');
+    Route::group(['prefix' => 'message'], function () {
+        // 新增文章留言
+        Route::post('/leave-message-to-article', 'Api\ArticleController@createMessageToArticle');
+    });
 
     Route::put('/update', 'Api\ArticleController@update')->middleware('article');
 

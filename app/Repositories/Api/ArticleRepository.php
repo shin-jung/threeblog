@@ -45,7 +45,8 @@ class ArticleRepository
         return ArticleMessage::create([
             'article_id' => $request['article_id'],
             'content' => $request['message'],
-            'user_id' => $userId
+            'user_id' => $userId,
+            'file' => json_encode([])
         ]);
     }
 }
