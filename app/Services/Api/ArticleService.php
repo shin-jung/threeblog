@@ -90,9 +90,30 @@ class ArticleService
             throw new \Exception('增加文章按讚數失敗', 500);
         }
         $createLikeToArticle = $this->articleRepository->createLikeArticle($request['article_id'], $userId);
-        if (!$addLikeArticle) {
+        if (!$createLikeToArticle) {
             DB::rollback();
             throw new \Exception('文章按讚失敗', 500);
+        }
+        DB::commit();
+        return true;
+    }
+
+    public function doCancelLikeArticle($request, $userId)
+    {
+        DB::beginTransaction();
+        $searchLikeArticle = $this->articleRepository->getLikeToArticle($request['article_id'], $userId);
+        if (is_null($searchLikeArticle)) {
+            throw new \Exception('你根本沒有按讚這篇文，何來取消按讚？', 403);
+        }
+        $cancelLike = $this->articleRepository->cancelLikeArticle($request['article_id']);
+        if (!$cancelLike) {
+            DB::rollback();
+            throw new \Exception('減少文章按讚數失敗', 500);
+        }
+        $deleteLikeToArticle = $this->articleRepository->deleteLikeArticle($request['article_id'], $userId);
+        if (!$deleteLikeToArticle) {
+            DB::rollback();
+            throw new \Exception('刪除文章按讚紀錄失敗', 500);
         }
         DB::commit();
         return true;

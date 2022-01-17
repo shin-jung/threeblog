@@ -42,6 +42,8 @@ Route::group(['prefix' => 'article', 'middleware' => 'auth.jwt'], function () {
     Route::post('/delete', 'Api\ArticleController@destroy')->middleware('article');
     
     Route::post('/like-article', 'Api\ArticleController@likeArticle');
+
+    Route::put('/cancel-like-article', 'Api\ArticleController@cancelLikeArticle');
 });
 
 Route::fallback(function () {

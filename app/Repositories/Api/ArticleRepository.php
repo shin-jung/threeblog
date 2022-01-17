@@ -90,4 +90,17 @@ class ArticleRepository
             'user_id' => $userId
         ]);
     }
+
+    public function cancelLikeArticle($articleId)
+    {
+        return Article::where('id', $articleId)
+                    ->decrement('count_like', 1);
+    }
+
+    public function deleteLikeArticle($articleId, $userId)
+    {
+        return LikeToArticle::where('article_id', $articleId)
+                            ->where('user_id', $userId)
+                            ->delete();
+    }
 }
