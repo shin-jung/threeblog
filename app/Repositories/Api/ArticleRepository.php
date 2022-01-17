@@ -53,7 +53,9 @@ class ArticleRepository
 
     public function getArticleMessageById($articleMessageId)
     {
-        return ArticleMessage::where('id', $articleMessageId)->first();
+        return ArticleMessage::with('relatedArticle')
+                            ->where('id', $articleMessageId)
+                            ->first();
     }
     
     public function modifyMessageToArticle($request)

@@ -12,4 +12,9 @@ class ArticleMessage extends Model
     protected $fillable = [
         'article_id', 'user_id', 'count_like', 'content', 'file'
     ];
+
+    public function relatedArticle()
+    {
+        return $this->hasOne('App\Models\Article', 'id', 'article_id');
+    }
 }

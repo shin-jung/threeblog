@@ -66,12 +66,16 @@ class ArticleService
 
     public function deleteMessageToArticleInfo($request, $userId)
     {
+        // 作者或留言本人才可刪除
         $searchArticleMessage = $this->articleRepository->getArticleMessageById($request['article_message_id']);
         if (is_null($searchArticleMessage)) {
             throw new \Exception('查無文章留言', 403);
         }
+
         if ($searchArticleMessage['user_id'] != $userId) {
-            throw new \Exception('你沒有資格刪除文章啦!', 403);
+            if ($searchArticleMessage->relatedArticle->author != $userId) {
+                throw new \Exception('你沒有資格刪除文章留言啦!', 403);
+            }
         }
         return $this->articleRepository->deleteMessageToArticle($request['article_message_id']);
     }
