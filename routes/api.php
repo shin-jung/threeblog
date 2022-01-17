@@ -33,7 +33,7 @@ Route::group(['prefix' => 'article', 'middleware' => 'auth.jwt'], function () {
         // 新增文章留言
         Route::post('/leave-message-to-article', 'Api\ArticleController@createMessageToArticle');
         // 修改文章留言
-        Route::put('/modify_leave_message', 'Api\ArticleController@modifyLeaveMessage');
+        Route::put('/modify_leave_message', 'Api\ArticleController@modifyLeaveMessage')->middleware('article.message');
         // 刪除文章留言
         Route::post('/delete_leave_message', 'Api\ArticleController@deleteLeaveMessage');
     });
