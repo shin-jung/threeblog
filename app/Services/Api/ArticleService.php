@@ -122,4 +122,26 @@ class ArticleService
         DB::commit();
         return true;
     }
+
+    public function doLikeArticleMessage($request, $userId)
+    {
+        // 只能按一次讚
+        DB::beginTransaction();
+        $searchLikeToArticleMessage = $this->articleRepository->getLikeToArticleMessage($request['article_message_id'], $userId);
+        if (!is_null($searchLikeToArticleMessage)) {
+            throw new \Exception('看過讚了啦', 403);
+        }
+        $addLikeArticleMessage = $this->articleRepository->addLikeArticleMessage($request['article_message_id']);
+        if (!$addLikeArticleMessage) {
+            DB::rollback();
+            throw new \Exception('增加文章留言按讚數失敗', 500);
+        }
+        $createLikeToArticleMessage = $this->articleRepository->createLikeArticleMessage($request['article_message_id'], $userId);
+        if (!$createLikeToArticleMessage) {
+            DB::rollback();
+            throw new \Exception('文章留言按讚失敗', 500);
+        }
+        DB::commit();
+        return true;
+    }
 }

@@ -15,7 +15,7 @@ class CreateLikeToArticleMessagesTable extends Migration
     {
         Schema::create('like_to_article_messages', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('like_to_message_id');
+            $table->integer('article_message_id');
             $table->integer('user_id');
             $table->timestamps();
         });

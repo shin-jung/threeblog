@@ -311,4 +311,30 @@ class ArticleController extends Controller
             ], empty($e->getCode()) ? 500 : $e->getCode());
         }
     }
+
+    public function likeArticleMessage(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'article_message_id' => 'required|integer',
+            ]);
+            if ($validator->fails()) {
+                throw new \Exception($validator->errors()->first(), 422);
+            }
+            $message = $this->articleService->doLikeArticleMessage($request, JWTAuth::user()->id);
+            if ($message) {
+                return response()->json([
+                    'success' => true,
+                    'message' => '喜歡文章留言成功',
+                    'data' => ''
+                ], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage().'#'.$e->getLine(),
+                'data' => ''
+            ], empty($e->getCode()) ? 500 : $e->getCode());
+        }
+    }
 }
