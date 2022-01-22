@@ -49,6 +49,8 @@ Route::group(['prefix' => 'article', 'middleware' => 'auth.jwt'], function () {
         Route::post('/delete_leave_message', 'Api\ArticleController@deleteLeaveMessage');
         // 按讚文章留言
         Route::post('/like-article-message', 'Api\ArticleController@likeArticleMessage');
+        // 取消按讚文章留言
+        Route::put('/cancel-like-article-message', 'Api\ArticleController@cancelLikeArticleMessage');
     });
 });
 

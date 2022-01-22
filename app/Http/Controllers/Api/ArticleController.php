@@ -337,4 +337,30 @@ class ArticleController extends Controller
             ], empty($e->getCode()) ? 500 : $e->getCode());
         }
     }
+
+    public function cancelLikeArticleMessage(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'article_message_id' => 'required|integer',
+            ]);
+            if ($validator->fails()) {
+                throw new \Exception($validator->errors()->first(), 422);
+            }
+            $message = $this->articleService->doCancelLikeArticleMessage($request, JWTAuth::user()->id);
+            if ($message) {
+                return response()->json([
+                    'success' => true,
+                    'message' => '取消按讚文章留言成功',
+                    'data' => ''
+                ], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage().'#'.$e->getLine(),
+                'data' => ''
+            ], empty($e->getCode()) ? 500 : $e->getCode());
+        }
+    }
 }

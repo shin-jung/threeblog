@@ -127,4 +127,10 @@ class ArticleRepository
             'user_id' => $userId
         ]);
     }
+
+    public function cancelLikeArticleMessage($articleMessageId)
+    {
+        return ArticleMessage::where('id', $articleMessageId)
+                    ->decrement('count_like', 1);
+    }
 }

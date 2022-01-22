@@ -144,4 +144,25 @@ class ArticleService
         DB::commit();
         return true;
     }
+
+    public function doCancelLikeArticleMessage($request, $userId)
+    {
+        DB::beginTransaction();
+        $searchLikeArticleMessage = $this->articleRepository->getLikeToArticleMessage($request['article_message_id'], $userId);
+        if (is_null($searchLikeArticleMessage)) {
+            throw new \Exception('你根本沒有按讚這篇文章留言，何來取消按讚？', 403);
+        }
+        $cancelLike = $this->articleRepository->cancelLikeArticleMessage($request['article_message_id']);
+        if (!$cancelLike) {
+            DB::rollback();
+            throw new \Exception('減少文章按讚數失敗', 500);
+        }
+        $deleteLikeToArticle = $this->articleRepository->deleteLikeArticle($request['article_id'], $userId);
+        if (!$deleteLikeToArticle) {
+            DB::rollback();
+            throw new \Exception('刪除文章按讚紀錄失敗', 500);
+        }
+        DB::commit();
+        return true;
+    }
 }
