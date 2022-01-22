@@ -24,13 +24,16 @@ class ArticleService
         return $this->articleRepository->storePost($request, $userId);
     }
 
-    public function showPost($articleId)
+    public function showPost($articleId, $authorId)
     {
         $getArticle = $this->articleRepository->showPost($articleId);
         if (is_null($getArticle)) {
             throw new \Exception('查無文章', 403);
         }
-        return $this->articleRepository->showPost($articleId);
+        if ($getArticle['author'] == $authorId) {
+            return $this->articleRepository->showPost($articleId);
+        }
+        throw new \Exception('非作者本人不可修改文章', 403);
     }
 
     public function updatePost($request)

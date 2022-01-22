@@ -27,12 +27,12 @@ Route::group(['middleware' => 'auth.jwt'], function () {
 Route::group(['prefix' => 'article', 'middleware' => 'auth.jwt'], function () {
     // 查看所有文章
     Route::get('/home', 'Api\ArticleController@index');
-    // 修改自己文章
+    // 新增自己文章
     Route::post('/store', 'Api\ArticleController@store');
     // 查看自己文章
     Route::get('/show', 'Api\ArticleController@show');
     // 修改自己文章
-    Route::put('/update', 'Api\ArticleController@update')->middleware('article');
+    Route::put('/update', 'Api\ArticleController@update');
     // 刪除自己文章
     Route::post('/delete', 'Api\ArticleController@destroy')->middleware('article');
     // 按讚文章

@@ -28,12 +28,6 @@ class ArticleController extends Controller
                 'message' => 'Success.',
                 'data' => $showArticle,
             ], 200);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Sorry, you can not see any articles.',
-                'data' => '',
-            ], 404);
         }
     }
 
@@ -41,8 +35,8 @@ class ArticleController extends Controller
     {
         try {
             $validator = validator::make($request->all(), [
-                'title' => 'required|alpha_dash',
-                'content' => 'required|alpha_dash',
+                'title' => 'required|string|alpha_dash',
+                'content' => 'required|string|alpha_dash',
             ]);
             if ($validator->fails()) {
                 throw new \Exception($validator->errors()->first(), 422);
@@ -105,7 +99,7 @@ class ArticleController extends Controller
                 throw new \Exception($validator->errors()->first(), 422);
             }
 
-            if ($this->articleService->updatePost($request)) {
+            if ($this->articleService->updatePost($request, JWTAuth::user()->id)) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Success.',
