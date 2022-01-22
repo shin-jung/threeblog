@@ -133,4 +133,14 @@ class ArticleRepository
         return ArticleMessage::where('id', $articleMessageId)
                     ->decrement('count_like', 1);
     }
+
+    public function getArticleMessages($articleId)
+    {
+        return ArticleMessage::where('article_id', $articleId)->get();
+    }
+
+    public function deleteArticleMessages($articleMessageArray)
+    {
+        return ArticleMessage::whereIn('id', $articleMessageArray)->delete();
+    }
 }

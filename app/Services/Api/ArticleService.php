@@ -43,7 +43,21 @@ class ArticleService
 
     public function destroyPost($request)
     {
-        return $this->articleRepository->destroyPost($request->article_id);
+        DB::beginTransaction();
+        if ($this->articleRepository->destroyPost($request->article_id)) {
+            $getArticleMessage = $this->articleRepository->getArticleMessages($request['article_id'])->pluck('id')->toArray();
+            $deleteArticleMessage = $this->articleRepository->deleteArticleMessages($getArticleMessage);
+            if ($deleteArticleMessage) {
+                DB::commit();
+                return true;
+            } else {
+                DB::rollback();
+                throw new \Exception('刪除文章失敗', 500);
+            }
+        } else {
+            throw new \Exception('刪除文章失敗', 500);
+            DB::rollback();
+        }
     }
 
     public function createMessageToArticleInfo($request, $userId)
