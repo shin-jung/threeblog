@@ -159,6 +159,7 @@ class ArticleController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'article_id' => 'required|integer',
+                'article_message_parent' => 'nullable|integer',
                 'message' => 'string',
             ]);
             if ($validator->fails()) {

@@ -47,6 +47,7 @@ class ArticleRepository
         return ArticleMessage::create([
             'article_id' => $request['article_id'],
             'content' => $request['message'],
+            'parent' => $request['article_message_parent'],
             'user_id' => $userId,
             'file' => json_encode([])
         ]);
@@ -57,6 +58,13 @@ class ArticleRepository
         return ArticleMessage::with('relatedArticle')
                             ->where('id', $articleMessageId)
                             ->first();
+    }
+    
+    public function getArticleMessageByParent($parent)
+    {
+        return ArticleMessage::with('relatedArticle')
+                            ->where('parent', $parent)
+                            ->get();
     }
     
     public function modifyMessageToArticle($request)

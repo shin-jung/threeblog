@@ -66,6 +66,15 @@ class ArticleService
         if (is_null($searchArticle)) {
             throw new \Exception('查無文章', 403);
         }
+        if (!is_null($request['article_message_parent'])) {
+            $articleMessage = $this->articleRepository->getArticleMessageById($request['article_message_parent']);
+            if (is_null($articleMessage) || !is_null($articleMessage['parent'])) {
+                throw new \Exception('查無留言', 403);
+            }
+            if ($articleMessage['article_id'] != $request['article_id']) {
+                throw new \Exception('文章id不符', 403);
+            }
+        }
         return $this->articleRepository->createMessageToArticleDetail($request, $userId);
     }
 
