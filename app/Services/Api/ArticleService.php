@@ -92,18 +92,36 @@ class ArticleService
 
     public function deleteMessageToArticleInfo($request, $userId)
     {
+        DB::beginTransaction();
         // 作者或留言本人才可刪除
         $searchArticleMessage = $this->articleRepository->getArticleMessageById($request['article_message_id']);
         if (is_null($searchArticleMessage)) {
             throw new \Exception('查無文章留言', 403);
         }
-
-        if ($searchArticleMessage['user_id'] != $userId) {
-            if ($searchArticleMessage->relatedArticle->author != $userId) {
-                throw new \Exception('你沒有資格刪除文章留言啦!', 403);
+        if (is_null($searchArticleMessage['parent'])) {
+            $parentId = $searchArticleMessage['id'];
+            // 刪除主留言
+            if ($searchArticleMessage['user_id'] != $userId) {
+                if ($searchArticleMessage->relatedArticle->author != $userId) {
+                    throw new \Exception('你沒有資格刪除文章留言啦!', 403);
+                }
+            }
+            $delete = $this->articleRepository->deleteMessageToArticle([$request['article_message_id']]);
+            if (!$delete) {
+                DB::rollback();
+                throw new \Exception('刪除文章留言失敗!', 500);
+            }
+            $childMessage = $this->articleRepository->getArticleMessageByParent($parentId)->pluck('id');
+            if (!$childMessage->isEmpty()) {
+                $deleteMessages = $this->articleRepository->deleteMessageToArticle($childMessage);
+                if (!$deleteMessages) {
+                    DB::rollback();
+                    throw new \Exception('刪除文章留言失敗!', 500);
+                }
             }
         }
-        return $this->articleRepository->deleteMessageToArticle($request['article_message_id']);
+        DB::commit();
+        return true;
     }
 
     public function doLikeArticle($request, $userId)

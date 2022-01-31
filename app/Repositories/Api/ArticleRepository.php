@@ -75,9 +75,9 @@ class ArticleRepository
                             ]);
     }
 
-    public function deleteMessageToArticle($articleMessageId)
+    public function deleteMessageToArticle($articleMessageIds)
     {
-        return ArticleMessage::where('id', $articleMessageId)
+        return ArticleMessage::whereIn('id', $articleMessageIds)
                             ->delete();
     }
 
