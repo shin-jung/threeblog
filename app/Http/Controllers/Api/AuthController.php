@@ -3,27 +3,25 @@
 namespace App\Http\Controllers\Api;
 
 use JWTAuth;
-use App\User;
+use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Support\Facades\Validator;
-use App\Services\Api\AuthService;
+use App\Services\Api\UserService;
 
 class AuthController extends Controller
 {
-    protected $authService;
+    protected $userService;
 
-    public function __construct(AuthService $authService)
+    public function __construct(UserService $userService)
     {
-        $this->authService = $authService;
+        $this->userService = $userService;
     }
 
     public function login(Request $request)
     {
         $input = $request->only('email', 'password');
-        $token = null;
-
         //如果我的token不等於我的輸入就回傳失敗以及無效的密碼和電子郵件
         if (!$token = JWTAuth::attempt($input)) {  //確定身分驗證是否成功
             return response()->json([
@@ -31,17 +29,16 @@ class AuthController extends Controller
                 'message' => 'Invalid Email or Password.',
                 'data' => '',
             ], 401);
-        //401 需要授權以回應請求。伺服器不知道用戶端身分
-        } else {
-            return response()->json([
-                'success' => true,
-                'message' => 'Success, you are login.',
-                'data' => $token,
-            ], 200);
         }
+        $userData = $this->userService->getUserData($token, JWTAuth::user()->id);
+        return response()->json([
+            'success' => true,
+            'message' => 'Success, you are login.',
+            'data' => $userData,
+        ], 200);
     }
 
-    public function logout(Request $request)
+    public function logout()
     {
         try {
             JWTAuth::invalidate(JWTAuth::getToken());
@@ -67,13 +64,13 @@ class AuthController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:20',
-            'email' => 'required|string|email|max:40|unique:users',
-            'password' => 'required|string|min:6|max:20|confirmed',
+                'email' => 'required|string|email|max:40|unique:users',
+                'password' => 'required|string|min:6|max:20|confirmed',
             ]);
             if ($validator->fails()) {
                 throw new \Exception($validator->errors()->first(), 422);
             }
-            if ($this->authService->register($request)) {
+            if ($this->userService->register($request)) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Success.',

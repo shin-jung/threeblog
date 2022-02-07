@@ -65,6 +65,7 @@ class Kernel extends HttpKernel
         'auth.jwt'  =>   \App\Http\Middleware\JwtMiddleware::class,
         'user' => \App\Http\Middleware\UserMiddleware::class,
         'article' => \App\Http\Middleware\ArticleMiddleware::class,
+        'article.message' => \App\Http\Middleware\ArticleMessageMiddleware::class,
     ];
 
     /**

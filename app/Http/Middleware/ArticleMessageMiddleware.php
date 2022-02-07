@@ -3,10 +3,10 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use App\Models\Article;
 use JWTAuth;
+use App\Models\ArticleMessage;
 
-class ArticleMiddleware
+class ArticleMessageMiddleware
 {
     /**
      * Handle an incoming request.
@@ -23,21 +23,19 @@ class ArticleMiddleware
                 'message' => 'Sorry, can not find your information',
             ], 403);
         }
-        $article = Article::where('id', $request->article_id)->first();
-        
-        if (is_null($article)) {
+        $articleMessage = ArticleMessage::where('id', $request->article_message_id)->first();
+        if (is_null($articleMessage)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Sorry, can not find this article.',
+                'message' => 'Sorry, can not find this article message.',
             ], 403);
         }
-        if (JWTAuth::user()->is_admin != true && JWTAuth::user()->id != $article->author) {
+        if (JWTAuth::user()->id != $articleMessage->user_id) {
             return response()->json([
                 'success' => false,
                 'message' => 'Sorry, you can not do it.',
             ], 403);
         }
-
         return $next($request);
     }
 }
