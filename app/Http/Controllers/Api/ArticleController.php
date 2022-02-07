@@ -70,7 +70,7 @@ class ArticleController extends Controller
             if (!is_numeric($request->article_id)) {
                 throw new \Exception('格式錯誤', 422);
             }
-            $showPost = $this->articleService->showPost($request->article_id);
+            $showPost = $this->articleService->showPost($request->article_id, JWTAuth::user()->id);
 
             return response()->json([
                 'success' => true,

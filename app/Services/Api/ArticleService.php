@@ -17,7 +17,6 @@ class ArticleService
     public function indexPost()
     {
         $info = [];
-        $message = [];
         $articles = $this->articleRepository->indexPost();
         foreach ($articles as $article) {
             $mother = $this->articleRepository->getArticleMotherMessage($article['id']);
@@ -67,16 +66,52 @@ class ArticleService
         return $this->articleRepository->storePost($request, $userId);
     }
 
-    public function showPost($articleId, $authorId)
+    public function showPost($articleId)
     {
         $getArticle = $this->articleRepository->showPost($articleId);
         if (is_null($getArticle)) {
             throw new \Exception('查無文章', 403);
         }
-        if ($getArticle['author'] == $authorId) {
-            return $this->articleRepository->showPost($articleId);
+        $info = [];
+        $mother = $this->articleRepository->getArticleMotherMessage($getArticle['id']);
+        $motherMessages = [];
+        foreach ($mother as $motherMessage) {
+            $child = $this->articleRepository->getArticleMessageByParent($motherMessage['id']);
+            $childMessages = [];
+            foreach ($child as $childMessage) {
+                $childMessages[] = [
+                    'message_id' => $childMessage['id'],
+                    'user_id' => $childMessage['user_id'],
+                    'like' => $childMessage['count_like'],
+                    'content' => $childMessage['content'],
+                    'create_date' => $childMessage['created_at']->format('Y-m-d H:m:i'),
+                    'update_date' => $childMessage['updated_at']->format('Y-m-d H:m:i'),
+                    'parent' => $childMessage['parent'],
+                    'child_message' => []
+                ];
+            }
+            $motherMessages[] = [
+                'message_id' => $motherMessage['id'],
+                'user_id' => $motherMessage['user_id'],
+                'like' => $motherMessage['count_like'],
+                'content' => $motherMessage['content'],
+                'create_date' => $motherMessage['created_at']->format('Y-m-d H:m:i'),
+                'update_date' => $motherMessage['updated_at']->format('Y-m-d H:m:i'),
+                'parent' => $motherMessage['parent'],
+                'child_message' => $childMessages
+            ];
         }
-        throw new \Exception('非作者本人不可修改文章', 403);
+        $info[] = [
+            'article_id' => $getArticle['id'],
+            'author_id' => $getArticle['author'],
+            'author_name' => $getArticle->relatedAuthor->name,
+            'title' => $getArticle['title'],
+            'content' => $getArticle['content'],
+            'create_date' => $getArticle['created_at']->format('Y-m-d H:m:i'),
+            'update_date' => $getArticle['updated_at']->format('Y-m-d H:m:i'),
+            'message' => $motherMessages
+        ];
+        return $info;
     }
 
     public function updatePost($request)
