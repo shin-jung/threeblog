@@ -12,4 +12,9 @@ class Article extends Model
     protected $fillable = [
         'author', 'title', 'content', 'count_like',
     ];
+
+    public function relatedAuthor()
+    {
+        return $this->hasOne('App\Models\User', 'id', 'author');
+    }
 }

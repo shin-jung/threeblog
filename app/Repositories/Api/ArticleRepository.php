@@ -151,4 +151,11 @@ class ArticleRepository
     {
         return ArticleMessage::whereIn('id', $articleMessageArray)->delete();
     }
+
+    public function getArticleMotherMessage($articleId)
+    {
+        return ArticleMessage::where('article_id', $articleId)
+                            ->whereNull('parent')
+                            ->get();
+    }
 }

@@ -16,7 +16,50 @@ class ArticleService
 
     public function indexPost()
     {
-        return $this->articleRepository->indexPost();
+        $info = [];
+        $message = [];
+        $articles = $this->articleRepository->indexPost();
+        foreach ($articles as $article) {
+            $mother = $this->articleRepository->getArticleMotherMessage($article['id']);
+            $motherMessages = [];
+            foreach ($mother as $motherMessage) {
+                $child = $this->articleRepository->getArticleMessageByParent($motherMessage['id']);
+                $childMessages = [];
+                foreach ($child as $childMessage) {
+                    $childMessages[] = [
+                        'message_id' => $childMessage['id'],
+                        'user_id' => $childMessage['user_id'],
+                        'like' => $childMessage['count_like'],
+                        'content' => $childMessage['content'],
+                        'create_date' => $childMessage['created_at']->format('Y-m-d H:m:i'),
+                        'update_date' => $childMessage['updated_at']->format('Y-m-d H:m:i'),
+                        'parent' => $childMessage['parent'],
+                        'child_message' => []
+                    ];
+                }
+                $motherMessages[] = [
+                    'message_id' => $motherMessage['id'],
+                    'user_id' => $motherMessage['user_id'],
+                    'like' => $motherMessage['count_like'],
+                    'content' => $motherMessage['content'],
+                    'create_date' => $motherMessage['created_at']->format('Y-m-d H:m:i'),
+                    'update_date' => $motherMessage['updated_at']->format('Y-m-d H:m:i'),
+                    'parent' => $motherMessage['parent'],
+                    'child_message' => $childMessages
+                ];
+            }
+            $info[] = [
+                'article_id' => $article['id'],
+                'author_id' => $article['author'],
+                'author_name' => $article->relatedAuthor->name,
+                'title' => $article['title'],
+                'content' => $article['content'],
+                'create_date' => $article['created_at']->format('Y-m-d H:m:i'),
+                'update_date' => $article['updated_at']->format('Y-m-d H:m:i'),
+                'message' => $motherMessages
+            ];
+        }
+        return $info;
     }
 
     public function storePost($request, $userId)
