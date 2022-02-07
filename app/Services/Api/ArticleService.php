@@ -114,9 +114,16 @@ class ArticleService
         return $info;
     }
 
-    public function updatePost($request)
+    public function updatePost($request, $authorId)
     {
-        return $this->articleRepository->updatePost($request);
+        $getArticle = $this->articleRepository->showPost($request['article_id']);
+        if (is_null($getArticle)) {
+            throw new \Exception('查無文章', 403);
+        }
+        if ($getArticle['author'] == $authorId) {
+            return $this->articleRepository->updatePost($request);
+        }
+        throw new \Exception('非作者本人不可修改文章', 403);
     }
 
     public function destroyPost($request)
