@@ -19,34 +19,8 @@ class ArticleService
         $info = [];
         $articles = $this->articleRepository->indexPost();
         foreach ($articles as $article) {
-            $mother = $this->articleRepository->getArticleMotherMessage($article['id']);
-            $motherMessages = [];
-            foreach ($mother as $motherMessage) {
-                $child = $this->articleRepository->getArticleMessageByParent($motherMessage['id']);
-                $childMessages = [];
-                foreach ($child as $childMessage) {
-                    $childMessages[] = [
-                        'message_id' => $childMessage['id'],
-                        'user_id' => $childMessage['user_id'],
-                        'like' => $childMessage['count_like'],
-                        'content' => $childMessage['content'],
-                        'create_date' => $childMessage['created_at']->format('Y-m-d H:m:i'),
-                        'update_date' => $childMessage['updated_at']->format('Y-m-d H:m:i'),
-                        'parent' => $childMessage['parent'],
-                        'child_message' => []
-                    ];
-                }
-                $motherMessages[] = [
-                    'message_id' => $motherMessage['id'],
-                    'user_id' => $motherMessage['user_id'],
-                    'like' => $motherMessage['count_like'],
-                    'content' => $motherMessage['content'],
-                    'create_date' => $motherMessage['created_at']->format('Y-m-d H:m:i'),
-                    'update_date' => $motherMessage['updated_at']->format('Y-m-d H:m:i'),
-                    'parent' => $motherMessage['parent'],
-                    'child_message' => $childMessages
-                ];
-            }
+            $message = $this->getArticleMessageFamily($article['id']);
+            
             $info[] = [
                 'article_id' => $article['id'],
                 'author_id' => $article['author'],
@@ -55,25 +29,15 @@ class ArticleService
                 'content' => $article['content'],
                 'create_date' => $article['created_at']->format('Y-m-d H:m:i'),
                 'update_date' => $article['updated_at']->format('Y-m-d H:m:i'),
-                'message' => $motherMessages
+                'message' => $message
             ];
         }
         return $info;
     }
 
-    public function storePost($request, $userId)
+    public function getArticleMessageFamily($articleId)
     {
-        return $this->articleRepository->storePost($request, $userId);
-    }
-
-    public function showPost($articleId)
-    {
-        $getArticle = $this->articleRepository->showPost($articleId);
-        if (is_null($getArticle)) {
-            throw new \Exception('查無文章', 403);
-        }
-        $info = [];
-        $mother = $this->articleRepository->getArticleMotherMessage($getArticle['id']);
+        $mother = $this->articleRepository->getArticleMotherMessage($articleId);
         $motherMessages = [];
         foreach ($mother as $motherMessage) {
             $child = $this->articleRepository->getArticleMessageByParent($motherMessage['id']);
@@ -101,6 +65,22 @@ class ArticleService
                 'child_message' => $childMessages
             ];
         }
+        return $motherMessages;
+    }
+
+    public function storePost($request, $userId)
+    {
+        return $this->articleRepository->storePost($request, $userId);
+    }
+
+    public function showPost($articleId)
+    {
+        $getArticle = $this->articleRepository->showPost($articleId);
+        if (is_null($getArticle)) {
+            throw new \Exception('查無文章', 403);
+        }
+        $info = [];
+        $message = $this->getArticleMessageFamily($getArticle['id']);
         $info[] = [
             'article_id' => $getArticle['id'],
             'author_id' => $getArticle['author'],
@@ -109,7 +89,7 @@ class ArticleService
             'content' => $getArticle['content'],
             'create_date' => $getArticle['created_at']->format('Y-m-d H:m:i'),
             'update_date' => $getArticle['updated_at']->format('Y-m-d H:m:i'),
-            'message' => $motherMessages
+            'message' => $message
         ];
         return $info;
     }
