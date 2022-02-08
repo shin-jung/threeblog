@@ -10,7 +10,7 @@ class ArticleMessage extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'article_id', 'user_id', 'count_like', 'content', 'file', 'parent'
+        'article_id', 'user_id', 'count_like', 'content', 'parent'
     ];
 
     public function relatedArticle()

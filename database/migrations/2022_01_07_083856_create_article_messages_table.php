@@ -19,7 +19,6 @@ class CreateArticleMessagesTable extends Migration
             $table->integer('user_id');
             $table->integer('count_like')->default('0');
             $table->string('content');
-            $table->json('file');
             $table->timestamps();
         });
     }
