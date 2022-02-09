@@ -30,7 +30,7 @@ class ArticleMessageMiddleware
                 'message' => 'Sorry, can not find this article message.',
             ], 403);
         }
-        if (JWTAuth::user()->id != $articleMessage->user_id) {
+        if (JWTAuth::user()->is_admin != true || JWTAuth::user()->id != $articleMessage->user_id) {
             return response()->json([
                 'success' => false,
                 'message' => 'Sorry, you can not do it.',
