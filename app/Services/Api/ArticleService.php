@@ -3,27 +3,37 @@
 namespace App\Services\Api;
 
 use App\Repositories\Api\ArticleRepository;
+use App\Repositories\Api\UserRepository;
+use App\Helpers\General\CollectionHelper;
 use DB;
 
 class ArticleService
 {
     protected $articleRepository;
 
-    public function __construct(ArticleRepository $articleRepository)
+    public function __construct(ArticleRepository $articleRepository, UserRepository $userRepository)
     {
         $this->articleRepository = $articleRepository;
+        $this->userRepository = $userRepository;
     }
 
-    public function indexPost()
+    public function indexPost($userId)
     {
         $info = [];
-        $articles = $this->articleRepository->indexPost();
-        foreach ($articles as $article) {
-            $message = $this->getArticleMessageFamily($article['id']);
-            
-            $info[] = [
+        $articleInfo = $this->articleRepository->indexPost();
+        $pageSize = 5;
+        $articlePage = CollectionHelper::paginate($articleInfo, $pageSize);
+        foreach ($articlePage as $article) {
+            $author = false;
+            $userInfo = $this->userRepository->getUserById($userId);
+            if ($userInfo->is_admin || $article['author'] == $userId) {
+                $author = true;
+            }
+            $message = $this->getArticleMessageFamily($article['id'], $userId);
+            $info['item'][] = [
                 'article_id' => $article['id'],
                 'author_id' => $article['author'],
+                'is_author' => $author,
                 'author_name' => $article->relatedAuthor->name,
                 'like' => $article->count_like,
                 'title' => $article['title'],
@@ -33,10 +43,16 @@ class ArticleService
                 'message' => $message
             ];
         }
+        $info['page'] = [
+            'count' => $articlePage->count(), // 該頁數有幾筆資料
+            'current_page' => $articlePage->currentPage(), // 目前頁數
+            'last_page' => $articlePage->lastPage(), // 最後一頁的頁數
+            'total' => $articlePage->total() // 總共有幾筆資料
+        ];
         return $info;
     }
 
-    public function getArticleMessageFamily($articleId)
+    public function getArticleMessageFamily($articleId, $userId)
     {
         $mother = $this->articleRepository->getArticleMotherMessage($articleId);
         $motherMessages = [];
@@ -44,10 +60,16 @@ class ArticleService
             $child = $this->articleRepository->getArticleMessageByParent($motherMessage['id']);
             $childMessages = [];
             foreach ($child as $childMessage) {
+                $author = false;
+                $userInfo = $this->userRepository->getUserById($userId);
+                if ($userInfo->is_admin || $childMessage['user_id'] == $userId) {
+                    $author = true;
+                }
                 $childMessages[] = [
                     'message_id' => $childMessage['id'],
                     'user_id' => $childMessage['user_id'],
                     'like' => $childMessage['count_like'],
+                    'is_author' => $author,
                     'content' => $childMessage['content'],
                     'create_date' => $childMessage['created_at']->format('Y-m-d H:m:i'),
                     'update_date' => $childMessage['updated_at']->format('Y-m-d H:m:i'),
@@ -55,11 +77,17 @@ class ArticleService
                     'child_message' => []
                 ];
             }
+            $author = false;
+            $userInfo = $this->userRepository->getUserById($userId);
+            if ($userInfo->is_admin || $motherMessage['user_id'] == $userId) {
+                $author = true;
+            }
             $motherMessages[] = [
                 'message_id' => $motherMessage['id'],
                 'user_id' => $motherMessage['user_id'],
                 'like' => $motherMessage['count_like'],
                 'content' => $motherMessage['content'],
+                'is_author' => $author,
                 'create_date' => $motherMessage['created_at']->format('Y-m-d H:m:i'),
                 'update_date' => $motherMessage['updated_at']->format('Y-m-d H:m:i'),
                 'parent' => $motherMessage['parent'],
@@ -74,20 +102,26 @@ class ArticleService
         return $this->articleRepository->storePost($request, $userId);
     }
 
-    public function showPost($articleId)
+    public function showPost($articleId, $userId)
     {
         $getArticle = $this->articleRepository->showPost($articleId);
         if (is_null($getArticle)) {
             throw new \Exception('查無文章', 403);
         }
         $info = [];
-        $message = $this->getArticleMessageFamily($getArticle['id']);
+        $author = false;
+        $message = $this->getArticleMessageFamily($getArticle['id'], $userId);
+        $userInfo = $this->userRepository->getUserById($userId);
+        if ($userInfo->is_admin || $getArticle['author'] == $userId) {
+            $author = true;
+        }
         $info[] = [
             'article_id' => $getArticle['id'],
             'author_id' => $getArticle['author'],
             'author_name' => $getArticle->relatedAuthor->name,
             'title' => $getArticle['title'],
             'content' => $getArticle['content'],
+            'is_author' => $author,
             'like' => $getArticle['count_like'],
             'create_date' => $getArticle['created_at']->format('Y-m-d H:m:i'),
             'update_date' => $getArticle['updated_at']->format('Y-m-d H:m:i'),
