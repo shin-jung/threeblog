@@ -4,6 +4,7 @@ namespace App\Services\Api;
 
 use App\Repositories\Api\ArticleRepository;
 use App\Repositories\Api\UserRepository;
+use App\Helpers\General\CollectionHelper;
 use DB;
 
 class ArticleService
@@ -19,15 +20,17 @@ class ArticleService
     public function indexPost($userId)
     {
         $info = [];
-        $articles = $this->articleRepository->indexPost();
-        foreach ($articles as $article) {
+        $articleInfo = $this->articleRepository->indexPost();
+        $pageSize = 5;
+        $articlePage = CollectionHelper::paginate($articleInfo, $pageSize);
+        foreach ($articlePage as $article) {
             $author = false;
             $userInfo = $this->userRepository->getUserById($userId);
             if ($userInfo->is_admin || $article['author'] == $userId) {
                 $author = true;
             }
             $message = $this->getArticleMessageFamily($article['id'], $userId);
-            $info[] = [
+            $info['item'][] = [
                 'article_id' => $article['id'],
                 'author_id' => $article['author'],
                 'is_author' => $author,
@@ -40,6 +43,12 @@ class ArticleService
                 'message' => $message
             ];
         }
+        $info['page'] = [
+            'count' => $articlePage->count(), // 該頁數有幾筆資料
+            'current_page' => $articlePage->currentPage(), // 目前頁數
+            'last_page' => $articlePage->lastPage(), // 最後一頁的頁數
+            'total' => $articlePage->total() // 總共有幾筆資料
+        ];
         return $info;
     }
 
