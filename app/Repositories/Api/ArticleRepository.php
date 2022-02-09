@@ -7,6 +7,7 @@ use App\Models\Article;
 use App\Models\LikeToArticle;
 use App\Models\LikeToArticleMessage;
 use App\Models\LogArticle;
+use App\Models\LogArticleMessage;
 
 class ArticleRepository
 {
@@ -70,15 +71,30 @@ class ArticleRepository
         ]);
     }
 
-    public function createMessageToArticleDetail($request, $userId)
+    public function createLogArticleMessage($articleMessageId, $isAdmin, $ip, $apiUrl, $previousData, $currentData)
     {
-        return ArticleMessage::create([
-            'article_id' => $request['article_id'],
-            'content' => $request['message'],
-            'parent' => $request['article_message_parent'],
-            'user_id' => $userId,
-            'file' => json_encode([])
+        return LogArticleMessage::create([
+            'article_message_id' => $articleMessageId,
+            'is_admin' => $isAdmin,
+            'ip' => $ip,
+            'type' => $apiUrl,
+            'previous_data' => json_encode($previousData),
+            'current_data' => json_encode($currentData)
         ]);
+    }
+
+    public function createMessageToArticleDetail($request, $userId, $isAdmin, $ip, $apiUrl)
+    {
+        $create = ArticleMessage::create([
+            'article_id' => $request->article_id,
+            'content' => $request->message,
+            'parent' => $request->article_message_parent,
+            'user_id' => $userId,
+        ]);
+        if (!$this->createLogArticleMessage($create->id, $isAdmin, $ip, $apiUrl, [], $create)) {
+            throw new \Exception('建立LogArticleMessage失敗', 500);
+        }
+        return $create;
     }
 
     public function getArticleMessageById($articleMessageId)
@@ -95,18 +111,31 @@ class ArticleRepository
                             ->get();
     }
     
-    public function modifyMessageToArticle($request)
+    public function modifyMessageToArticle($request, $userId, $isAdmin, $ip, $apiUrl)
     {
-        return ArticleMessage::where('id', $request['article_message_id'])
+        $message = $this->getArticleMessageById($request->article_message_id);
+        $update = ArticleMessage::where('id', $request->article_message_id)
                             ->update([
-                                'content' => $request['message']
+                                'content' => $request->message
                             ]);
+        $newMessage = $this->getArticleMessageById($request->article_message_id);
+        if (!$this->createLogArticleMessage($request->article_message_id, $isAdmin, $ip, $apiUrl, $message, $newMessage)) {
+            throw new \Exception('建立LogArticleMessage失敗', 500);
+        }
+        return $update;
     }
 
-    public function deleteMessageToArticle($articleMessageIds)
+    public function deleteMessageToArticle($articleMessageIds, $isAdmin, $ip, $apiUrl)
     {
-        return ArticleMessage::whereIn('id', $articleMessageIds)
+        foreach ($articleMessageIds as $message) {
+            $messageInfo = $this->getArticleMessageById($message);
+            if (!$this->createLogArticleMessage($message, $isAdmin, $ip, $apiUrl, $messageInfo, [])) {
+                throw new \Exception('建立LogArticle失敗', 500);
+            }
+        }
+        $delete = ArticleMessage::whereIn('id', $articleMessageIds)
                             ->delete();
+        return $delete;
     }
 
     public function getLikeToArticle($articleId, $userId)
