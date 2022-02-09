@@ -99,7 +99,10 @@ class ArticleService
 
     public function storePost($request, $userId)
     {
-        return $this->articleRepository->storePost($request, $userId);
+        $userInfo = $this->userRepository->getUserById($userId);
+        $otherService = app()->make(\App\Services\Api\OtherService::class);
+        $apiUrl = $otherService->getApiUrl($request->path());
+        return $this->articleRepository->storePost($request, $userId, $userInfo['is_admin'], $request->ip(), $apiUrl);
     }
 
     public function showPost($articleId, $userId)
@@ -130,23 +133,35 @@ class ArticleService
         return $info;
     }
 
-    public function updatePost($request, $authorId)
+    public function updatePost($request, $userId)
     {
         $getArticle = $this->articleRepository->showPost($request['article_id']);
         if (is_null($getArticle)) {
             throw new \Exception('查無文章', 403);
         }
-        if ($getArticle['author'] == $authorId) {
-            return $this->articleRepository->updatePost($request);
+        if ($getArticle['author'] == $userId) {
+            $userInfo = $this->userRepository->getUserById($userId);
+            $otherService = app()->make(\App\Services\Api\OtherService::class);
+            $apiUrl = $otherService->getApiUrl($request->path());
+            return $this->articleRepository->updatePost($request, $userInfo['is_admin'], $request->ip(), $apiUrl);
         }
         throw new \Exception('非作者本人不可修改文章', 403);
     }
 
-    public function destroyPost($request)
+    public function destroyPost($request, $userId)
     {
         DB::beginTransaction();
-        if ($this->articleRepository->destroyPost($request->article_id)) {
+        $userInfo = $this->userRepository->getUserById($userId);
+        $otherService = app()->make(\App\Services\Api\OtherService::class);
+        $apiUrl = $otherService->getApiUrl($request->path());
+        if ($this->articleRepository->destroyPost($request->article_id, $userInfo['is_admin'], $request->ip(), $apiUrl)) {
             $getArticleMessage = $this->articleRepository->getArticleMessages($request['article_id'])->pluck('id')->toArray();
+            if (sizeof($getArticleMessage) == 0) {
+                // 代表此文章沒有留言
+                DB::commit();
+                return true;
+            }
+            
             $deleteArticleMessage = $this->articleRepository->deleteArticleMessages($getArticleMessage);
             if ($deleteArticleMessage) {
                 DB::commit();
@@ -163,39 +178,48 @@ class ArticleService
 
     public function createMessageToArticleInfo($request, $userId)
     {
-        $searchArticle = $this->articleRepository->showPost($request['article_id']);
+        $searchArticle = $this->articleRepository->showPost($request->article_id);
         if (is_null($searchArticle)) {
             throw new \Exception('查無文章', 403);
         }
-        if (!is_null($request['article_message_parent'])) {
-            $articleMessage = $this->articleRepository->getArticleMessageById($request['article_message_parent']);
+        if (!is_null($request->article_message_parent)) {
+            $articleMessage = $this->articleRepository->getArticleMessageById($request->article_message_parent);
             if (is_null($articleMessage) || !is_null($articleMessage['parent'])) {
                 throw new \Exception('查無留言', 403);
             }
-            if ($articleMessage['article_id'] != $request['article_id']) {
+            if ($articleMessage['article_id'] != $request->article_id) {
                 throw new \Exception('文章id不符', 403);
             }
         }
-        return $this->articleRepository->createMessageToArticleDetail($request, $userId);
+        $userInfo = $this->userRepository->getUserById($userId);
+        $otherService = app()->make(\App\Services\Api\OtherService::class);
+        $apiUrl = $otherService->getApiUrl($request->path());
+        return $this->articleRepository->createMessageToArticleDetail($request, $userId, $userInfo['is_admin'], $request->ip(), $apiUrl);
     }
 
     public function modifyMessageToArticleInfo($request, $userId)
     {
-        $searchArticleMessage = $this->articleRepository->getArticleMessageById($request['article_message_id']);
+        $searchArticleMessage = $this->articleRepository->getArticleMessageById($request->article_message_id);
         if (is_null($searchArticleMessage)) {
             throw new \Exception('查無文章留言', 403);
         }
         if ($searchArticleMessage['user_id'] != $userId) {
             throw new \Exception('你沒有資格修改文章啦!', 403);
         }
-        return $this->articleRepository->modifyMessageToArticle($request);
+        $userInfo = $this->userRepository->getUserById($userId);
+        $otherService = app()->make(\App\Services\Api\OtherService::class);
+        $apiUrl = $otherService->getApiUrl($request->path());
+        return $this->articleRepository->modifyMessageToArticle($request, $userId, $userInfo['is_admin'], $request->ip(), $apiUrl);
     }
 
     public function deleteMessageToArticleInfo($request, $userId)
     {
         DB::beginTransaction();
         // 作者或留言本人才可刪除
-        $searchArticleMessage = $this->articleRepository->getArticleMessageById($request['article_message_id']);
+        $userInfo = $this->userRepository->getUserById($userId);
+        $otherService = app()->make(\App\Services\Api\OtherService::class);
+        $apiUrl = $otherService->getApiUrl($request->path());
+        $searchArticleMessage = $this->articleRepository->getArticleMessageById($request->article_message_id);
         if (is_null($searchArticleMessage)) {
             throw new \Exception('查無文章留言', 403);
         }
@@ -207,14 +231,14 @@ class ArticleService
                     throw new \Exception('你沒有資格刪除文章留言啦!', 403);
                 }
             }
-            $delete = $this->articleRepository->deleteMessageToArticle([$request['article_message_id']]);
+            $delete = $this->articleRepository->deleteMessageToArticle([$request->article_message_id], $userInfo['is_admin'], $request->ip(), $apiUrl);
             if (!$delete) {
                 DB::rollback();
                 throw new \Exception('刪除文章留言失敗!', 500);
             }
             $childMessage = $this->articleRepository->getArticleMessageByParent($parentId)->pluck('id');
             if (!$childMessage->isEmpty()) {
-                $deleteMessages = $this->articleRepository->deleteMessageToArticle($childMessage);
+                $deleteMessages = $this->articleRepository->deleteMessageToArticle($childMessage, $userInfo['is_admin'], $request->ip(), $apiUrl);
                 if (!$deleteMessages) {
                     DB::rollback();
                     throw new \Exception('刪除文章留言失敗!', 500);

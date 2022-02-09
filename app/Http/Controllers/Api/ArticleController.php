@@ -132,7 +132,7 @@ class ArticleController extends Controller
                 throw new \Exception($validator->errors()->first(), 422);
             }
 
-            if ($this->articleService->destroyPost($request)) {
+            if ($this->articleService->destroyPost($request, JWTAuth::user()->id)) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Success.',
@@ -165,7 +165,7 @@ class ArticleController extends Controller
             if ($validator->fails()) {
                 throw new \Exception($validator->errors()->first(), 422);
             }
-            $message = $this->articleService->createMessageToArticleInfo($request->all(), JWTAuth::user()->id);
+            $message = $this->articleService->createMessageToArticleInfo($request, JWTAuth::user()->id);
             if ($message) {
                 return response()->json([
                     'success' => true,
@@ -198,7 +198,7 @@ class ArticleController extends Controller
             if ($validator->fails()) {
                 throw new \Exception($validator->errors()->first(), 422);
             }
-            $message = $this->articleService->modifyMessageToArticleInfo($request->all(), JWTAuth::user()->id);
+            $message = $this->articleService->modifyMessageToArticleInfo($request, JWTAuth::user()->id);
             if ($message) {
                 return response()->json([
                     'success' => true,
@@ -230,7 +230,7 @@ class ArticleController extends Controller
             if ($validator->fails()) {
                 throw new \Exception($validator->errors()->first(), 422);
             }
-            $message = $this->articleService->deleteMessageToArticleInfo($request->all(), JWTAuth::user()->id);
+            $message = $this->articleService->deleteMessageToArticleInfo($request, JWTAuth::user()->id);
             if ($message) {
                 return response()->json([
                     'success' => true,
