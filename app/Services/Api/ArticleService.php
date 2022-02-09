@@ -99,7 +99,10 @@ class ArticleService
 
     public function storePost($request, $userId)
     {
-        return $this->articleRepository->storePost($request, $userId);
+        $userInfo = $this->userRepository->getUserById($userId);
+        $otherService = app()->make(\App\Services\Api\OtherService::class);
+        $apiUrl = $otherService->getApiUrl($request->path());
+        return $this->articleRepository->storePost($request, $userId, $userInfo['is_admin'], $request->ip(), $apiUrl);
     }
 
     public function showPost($articleId, $userId)
@@ -130,23 +133,35 @@ class ArticleService
         return $info;
     }
 
-    public function updatePost($request, $authorId)
+    public function updatePost($request, $userId)
     {
         $getArticle = $this->articleRepository->showPost($request['article_id']);
         if (is_null($getArticle)) {
             throw new \Exception('查無文章', 403);
         }
-        if ($getArticle['author'] == $authorId) {
-            return $this->articleRepository->updatePost($request);
+        if ($getArticle['author'] == $userId) {
+            $userInfo = $this->userRepository->getUserById($userId);
+            $otherService = app()->make(\App\Services\Api\OtherService::class);
+            $apiUrl = $otherService->getApiUrl($request->path());
+            return $this->articleRepository->updatePost($request, $userInfo['is_admin'], $request->ip(), $apiUrl);
         }
         throw new \Exception('非作者本人不可修改文章', 403);
     }
 
-    public function destroyPost($request)
+    public function destroyPost($request, $userId)
     {
         DB::beginTransaction();
-        if ($this->articleRepository->destroyPost($request->article_id)) {
+        $userInfo = $this->userRepository->getUserById($userId);
+        $otherService = app()->make(\App\Services\Api\OtherService::class);
+        $apiUrl = $otherService->getApiUrl($request->path());
+        if ($this->articleRepository->destroyPost($request->article_id, $userInfo['is_admin'], $request->ip(), $apiUrl)) {
             $getArticleMessage = $this->articleRepository->getArticleMessages($request['article_id'])->pluck('id')->toArray();
+            if (sizeof($getArticleMessage) == 0) {
+                // 代表此文章沒有留言
+                DB::commit();
+                return true;
+            }
+            
             $deleteArticleMessage = $this->articleRepository->deleteArticleMessages($getArticleMessage);
             if ($deleteArticleMessage) {
                 DB::commit();

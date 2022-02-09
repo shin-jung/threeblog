@@ -132,7 +132,7 @@ class ArticleController extends Controller
                 throw new \Exception($validator->errors()->first(), 422);
             }
 
-            if ($this->articleService->destroyPost($request)) {
+            if ($this->articleService->destroyPost($request, JWTAuth::user()->id)) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Success.',

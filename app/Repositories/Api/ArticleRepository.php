@@ -6,6 +6,7 @@ use App\Models\ArticleMessage;
 use App\Models\Article;
 use App\Models\LikeToArticle;
 use App\Models\LikeToArticleMessage;
+use App\Models\LogArticle;
 
 class ArticleRepository
 {
@@ -14,13 +15,17 @@ class ArticleRepository
         return Article::all();
     }
 
-    public function storePost($request, $userId)
+    public function storePost($request, $userId, $isAdmin, $ip, $apiUrl)
     {
-        return Article::create([
+        $create = Article::create([
             'title' => $request->title,
             'content' => $request->content,
             'author' => $userId,
         ]);
+        if (!$this->createLogArticle($create->id, $isAdmin, $ip, $apiUrl, [], $create)) {
+            throw new \Exception('建立LogArticle失敗', 500);
+        }
+        return $create;
     }
 
     public function showPost($articleId)
@@ -28,18 +33,41 @@ class ArticleRepository
         return Article::where('id', $articleId)->first();
     }
 
-    public function updatePost($request)
+    public function updatePost($request, $isAdmin, $ip, $apiUrl)
     {
-        return Article::where('id', $request->article_id)
+        $article = $this->showPost($request->article_id);
+        $updateArticle = Article::where('id', $request->article_id)
                         ->update([
                             'title' => $request->title,
                             'content' => $request->content,
                         ]);
+        $newArticle = $this->showPost($request->article_id);
+        if (!$this->createLogArticle($request->article_id, $isAdmin, $ip, $apiUrl, $article, $newArticle)) {
+            throw new \Exception('建立LogArticle失敗', 500);
+        }
+        return $updateArticle;
     }
 
-    public function destroyPost($articleId)
+    public function destroyPost($articleId, $isAdmin, $ip, $apiUrl)
     {
-        return Article::where('id', $articleId)->delete();
+        $article = $this->showPost($articleId);
+        $delete = Article::where('id', $articleId)->delete();
+        if (!$this->createLogArticle($articleId, $isAdmin, $ip, $apiUrl, $article, [])) {
+            throw new \Exception('建立LogArticle失敗', 500);
+        }
+        return $delete;
+    }
+
+    public function createLogArticle($articleId, $isAdmin, $ip, $apiUrl, $previousData, $currentData)
+    {
+        return LogArticle::create([
+            'article_id' => $articleId,
+            'is_admin' => $isAdmin,
+            'ip' => $ip,
+            'type' => $apiUrl,
+            'previous_data' => json_encode($previousData),
+            'current_data' => json_encode($currentData)
+        ]);
     }
 
     public function createMessageToArticleDetail($request, $userId)
