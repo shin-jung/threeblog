@@ -25,6 +25,7 @@ class ArticleService
                 'article_id' => $article['id'],
                 'author_id' => $article['author'],
                 'author_name' => $article->relatedAuthor->name,
+                'like' => $article->count_like,
                 'title' => $article['title'],
                 'content' => $article['content'],
                 'create_date' => $article['created_at']->format('Y-m-d H:m:i'),
@@ -87,6 +88,7 @@ class ArticleService
             'author_name' => $getArticle->relatedAuthor->name,
             'title' => $getArticle['title'],
             'content' => $getArticle['content'],
+            'like' => $getArticle['count_like'],
             'create_date' => $getArticle['created_at']->format('Y-m-d H:m:i'),
             'update_date' => $getArticle['updated_at']->format('Y-m-d H:m:i'),
             'message' => $message
