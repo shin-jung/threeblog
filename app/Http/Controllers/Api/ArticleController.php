@@ -20,7 +20,7 @@ class ArticleController extends Controller
 
     public function index()
     {
-        $showArticle = $this->articleService->indexPost();
+        $showArticle = $this->articleService->indexPost(JWTAuth::user()->id);
         
         if ($showArticle) {
             return response()->json([
