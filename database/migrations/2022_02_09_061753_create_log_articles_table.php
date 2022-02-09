@@ -19,8 +19,8 @@ class CreateLogArticlesTable extends Migration
             $table->boolean('is_admin')->commit('是否為管理員操作');
             $table->string('ip');
             $table->string('type');
-            $table->json('previous_data')->nullable();
-            $table->json('current_data')->nullable();
+            $table->json('previous_data');
+            $table->json('current_data');
             $table->timestamps();
         });
     }
