@@ -19,8 +19,8 @@ class CreateLogArticleMessagesTable extends Migration
             $table->boolean('is_admin')->commit('是否為管理員操作');
             $table->string('ip');
             $table->string('type');
-            $table->json('previous_data');
-            $table->json('current_data');
+            $table->string('previous_message');
+            $table->string('current_message');
             $table->timestamps();
         });
     }

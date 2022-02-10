@@ -23,7 +23,8 @@ class ArticleRepository
             'content' => $request->content,
             'author' => $userId,
         ]);
-        if (!$this->createLogArticle($create->id, $isAdmin, $ip, $apiUrl, [], $create)) {
+        $message = 'title: ' . $request->title . ', content: ' . $request->content;
+        if (!$this->createLogArticle($create->id, $isAdmin, $ip, $apiUrl, '', $message)) {
             throw new \Exception('建立LogArticle失敗', 500);
         }
         return $create;
@@ -37,13 +38,15 @@ class ArticleRepository
     public function updatePost($request, $isAdmin, $ip, $apiUrl)
     {
         $article = $this->showPost($request->article_id);
+        $message = 'title: ' . $article->title . ', content: ' . $article->content;
         $updateArticle = Article::where('id', $request->article_id)
                         ->update([
                             'title' => $request->title,
                             'content' => $request->content,
                         ]);
         $newArticle = $this->showPost($request->article_id);
-        if (!$this->createLogArticle($request->article_id, $isAdmin, $ip, $apiUrl, $article, $newArticle)) {
+        $newMessage = 'title: ' . $request->title . ', content: ' . $request->content;
+        if (!$this->createLogArticle($request->article_id, $isAdmin, $ip, $apiUrl, $message, $newMessage)) {
             throw new \Exception('建立LogArticle失敗', 500);
         }
         return $updateArticle;
@@ -52,8 +55,9 @@ class ArticleRepository
     public function destroyPost($articleId, $isAdmin, $ip, $apiUrl)
     {
         $article = $this->showPost($articleId);
+        $message = 'title: ' . $article->title . ', content: ' . $article->content;
         $delete = Article::where('id', $articleId)->delete();
-        if (!$this->createLogArticle($articleId, $isAdmin, $ip, $apiUrl, $article, [])) {
+        if (!$this->createLogArticle($articleId, $isAdmin, $ip, $apiUrl, $message, '')) {
             throw new \Exception('建立LogArticle失敗', 500);
         }
         return $delete;
@@ -66,8 +70,8 @@ class ArticleRepository
             'is_admin' => $isAdmin,
             'ip' => $ip,
             'type' => $apiUrl,
-            'previous_data' => json_encode($previousData),
-            'current_data' => json_encode($currentData)
+            'previous_message' => $previousData,
+            'current_message' => $currentData
         ]);
     }
 
@@ -78,8 +82,8 @@ class ArticleRepository
             'is_admin' => $isAdmin,
             'ip' => $ip,
             'type' => $apiUrl,
-            'previous_data' => json_encode($previousData),
-            'current_data' => json_encode($currentData)
+            'previous_message' => $previousData,
+            'current_message' => $currentData
         ]);
     }
 
@@ -91,7 +95,7 @@ class ArticleRepository
             'parent' => $request->article_message_parent,
             'user_id' => $userId,
         ]);
-        if (!$this->createLogArticleMessage($create->id, $isAdmin, $ip, $apiUrl, [], $create)) {
+        if (!$this->createLogArticleMessage($create->id, $isAdmin, $ip, $apiUrl, '', $create->content)) {
             throw new \Exception('建立LogArticleMessage失敗', 500);
         }
         return $create;
@@ -111,7 +115,7 @@ class ArticleRepository
                             ->get();
     }
     
-    public function modifyMessageToArticle($request, $userId, $isAdmin, $ip, $apiUrl)
+    public function modifyMessageToArticle($request, $isAdmin, $ip, $apiUrl)
     {
         $message = $this->getArticleMessageById($request->article_message_id);
         $update = ArticleMessage::where('id', $request->article_message_id)
@@ -119,7 +123,7 @@ class ArticleRepository
                                 'content' => $request->message
                             ]);
         $newMessage = $this->getArticleMessageById($request->article_message_id);
-        if (!$this->createLogArticleMessage($request->article_message_id, $isAdmin, $ip, $apiUrl, $message, $newMessage)) {
+        if (!$this->createLogArticleMessage($request->article_message_id, $isAdmin, $ip, $apiUrl, $message->content, $request->message)) {
             throw new \Exception('建立LogArticleMessage失敗', 500);
         }
         return $update;
@@ -129,7 +133,7 @@ class ArticleRepository
     {
         foreach ($articleMessageIds as $message) {
             $messageInfo = $this->getArticleMessageById($message);
-            if (!$this->createLogArticleMessage($message, $isAdmin, $ip, $apiUrl, $messageInfo, [])) {
+            if (!$this->createLogArticleMessage($message, $isAdmin, $ip, $apiUrl, $messageInfo->content, '')) {
                 throw new \Exception('建立LogArticle失敗', 500);
             }
         }
