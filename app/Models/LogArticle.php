@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class LogArticle extends Model
 {
     protected $fillable = [
-        'article_id', 'is_admin', 'ip', 'type', 'previous_data',
-        'current_data'
+        'article_id', 'is_admin', 'ip', 'type', 'previous_message',
+        'current_message'
     ];
 }

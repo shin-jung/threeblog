@@ -209,7 +209,7 @@ class ArticleService
         $userInfo = $this->userRepository->getUserById($userId);
         $otherService = app()->make(\App\Services\Api\OtherService::class);
         $apiUrl = $otherService->getApiUrl($request->path());
-        return $this->articleRepository->modifyMessageToArticle($request, $userId, $userInfo['is_admin'], $request->ip(), $apiUrl);
+        return $this->articleRepository->modifyMessageToArticle($request, $userInfo['is_admin'], $request->ip(), $apiUrl);
     }
 
     public function deleteMessageToArticleInfo($request, $userId)
