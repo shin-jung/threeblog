@@ -161,6 +161,8 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
+        Shpasser\GaeSupportL5\GaeSupportServiceProvider::class,
+
 
         /*
          * Package Service Providers...
